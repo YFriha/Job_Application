@@ -1,0 +1,71 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito+Sans:ital,opsz,wdth,wght@0,6..12,125,736;1,6..12,125,736&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+
+.cursor-pointer {
+    cursor: pointer;
+  }
+  .custom-gray-text {
+    color: rgb(255, 152, 67); /* or any other shade of gray you prefer */
+  }
+  .titleClr {
+    color: rgb(255, 152, 67); 
+    font-family: 'Kanit', sans-serif !important;
+
+}
+/* .googleBtn{
+    color:red
+} */
+.subBtn{
+    background-color: rgb(255, 148, 61);
+}
+.googleBtn{
+    background-color: rgb(255, 79, 66);
+    color: azure;
+}
+.fbBtn{
+    background-color: rgb(85, 207, 255);
+    color: azure;
+}
+
+/* Container for login form */
+.Auth-form-container {
+    flex: 1; /* Take up remaining space */
+    display:content;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Add padding around the form */
+
+  }
+  
+  /* Container for image */
+  .Auth-image-container {
+    flex: 1; /* Take up remaining space */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Style the image */
+  .Auth-image-container img {
+    max-width: 100%; /* Ensure the image doesn't exceed container width */
+    max-height: 100%; /* Ensure the image doesn't exceed container height */
+  }
+  
+  /* Adjust spacing between form and image */
+  @media (min-width: 768px) {
+    /* Apply styles only on larger screens */
+    .Auth-page-container {
+      display: flex;
+    }
+    .Auth-form-container {
+      margin-right: 0px; 
+    }
+  }
+  .centered-div {
+    display: flex;
+    justify-content: center; /* Centers the content horizontally */
+    align-items: center; /* Centers the content vertically */
+    height: 100vh; /* Set height to 100% of the viewport height */
+  }
+  

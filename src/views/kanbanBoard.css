@@ -1,0 +1,30 @@
+.kanbanBoardGrid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto; /* Center the board horizontally */
+    padding: 1rem; /* Add some padding for visual separation */
+  }
+  
+  .kanbanBoardColumn {
+    padding: 1rem;
+    margin: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff; /* Set background color */
+  }
+  
+  .columnTitle {
+    margin-bottom: 0.5rem; /* Add space between title and candidates */
+    text-align: center; /* Center align the column title */
+  }
+  
+  .candidate {
+    margin-bottom: 0.5rem;
+  }
+  
+  .candidateName,
+  .candidateEmail {
+    /* Style candidate details (optional) */
+    font-weight: bold;
+  }
+  
