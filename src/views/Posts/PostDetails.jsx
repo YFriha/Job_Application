@@ -6,8 +6,8 @@ import routes from "routes";
 import React, { useState } from "react";
 import PerfectScrollbar from "perfect-scrollbar";
 import ToggleSwitch from "components/ToggleSwitch/ToggleSwitch";
-import { ControlledBoard } from "./board";
-import DataTable from "./DataTable";
+import { ControlledBoard } from "../Candidates/board";
+import DataTable from "../Candidates/DataTable";
 
 
 const candidates = [
@@ -48,7 +48,7 @@ const candidates = [
 export default function PostDetails() {
   const [data, setData] = useState([]);
 
-  const { imageSrc, title, description, requirement, deadline, company } =
+  const { postid,imageSrc, title, description, requirement, deadline } =
     useParams();
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
 
@@ -71,10 +71,23 @@ export default function PostDetails() {
     };
   
   },[]);
+
+  // const [filter, setFilter] = useState("");
+  // const [filtredCand, setFiltredCand] = useState([]);
+  // const filteredCards = filteredCand.filter((cand) => {
+  //   const candid = cand.title.toLowerCase();
+  //   const filterLower = filter.toLowerCase();
+
+  //   return job.startsWith(filterLower);
+  // });
+  // console.log(filteredCards);
+
   async function Load() {
-    const response = await fetch("http://127.0.0.1:8000/candidates/list/");
+    console.log("postId : ",postid);
+    const response = await fetch(`http://127.0.0.1:8000/posts/${postid}/findCandidate/`);
     const json = await response.json();
     setData(json);
+    // setFiltredCand(json)
     console.log('those are our objects : ',json) 
     return json;
   }
@@ -179,7 +192,7 @@ export default function PostDetails() {
                           {deadline}
                         </td>
                       </tr>
-                      <tr>
+                      {/* <tr>
                         <td
                           style={{
                             backgroundColor: "#ffffff",
@@ -196,7 +209,7 @@ export default function PostDetails() {
                         >
                           {company}
                         </td>
-                      </tr>
+                      </tr> */}
                     </tbody>
                   </table>
                 </div>
@@ -209,7 +222,7 @@ export default function PostDetails() {
         <ToggleSwitch onChange={handleSwitchChange} checked={isSwitchChecked} />
       </div>
       {isSwitchChecked ? (
-        <ControlledBoard candidates={candidates} />
+        <ControlledBoard candidates={data} />
       ) : (
         <DataTable candidates={data} />
       )}

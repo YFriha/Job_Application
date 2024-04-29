@@ -1,0 +1,58 @@
+.cont {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    /* height: 300px; */
+  }
+  
+  .mycard-scroll {
+    display: inline-block;
+    /* margin-right: 10px; Adjust spacing between cards as needed */
+    height: 552px; 
+    /*  */
+    width: 500px;
+    padding-top: 50px;}
+  .mycard-scrolll {
+    /* position:unset; */
+    display: inline-block;
+    /* margin-right: 10px; Adjust spacing between cards as needed */
+    height: 552px; /* Adjust as needed */
+     /* overflow-y:auto;  */
+    width: 500px;
+    padding-top: 50px;
+    transition: margin-top 0.3s; /* Smooth transition when becoming fixed */
+
+  }
+  .home{
+    min-height: 200px;
+    width: 1200px;
+    padding-left: 100px;
+    
+  }
+  .fixed {
+    /* z-index: 1000; */
+    position: fixed;
+    top: 0;
+    left: 20;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+     margin-top: 0;  
+  }
+  
+  .mycard-scroll::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar for WebKit browsers (Chrome, Safari, etc.) */
+  }
+  
+  .mycard-scroll {
+    -ms-overflow-style: none; /* Hide the scrollbar for Internet Explorer and Edge */
+    scrollbar-width: none; /* Hide the scrollbar for Firefox */
+  }
+  .share-button {
+    color: #9cd6d1;
+    transition: color 0.3s;
+  }
+  
+  .share-button:hover {
+    background-color: #c0fcf6;
+  }
+  

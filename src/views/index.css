@@ -76,3 +76,18 @@
     font-weight: 600;
     color: rgb(34, 34, 34);
   }
+  .addButton {
+    background-color: #9cd9d1;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition:  0.3s;
+  }
+  
+  .addButton:hover {
+    background-color: #00493f(211 0% 30%);
+  }
+  

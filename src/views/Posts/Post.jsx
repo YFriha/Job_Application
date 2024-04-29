@@ -528,11 +528,11 @@
 //=============================================================================================================
 //
 //==============================================================================================================
-import ImageUploadButton from "./ImageUploadButton";
-
+import ImageUploadButton from "../ImageUploadButton";
+import Alert from "@mui/material/Alert";
 import axios from "axios";
 import CardPost from "./CardPost";
-import MyArrayInput from "./MyArrayInput";
+import MyArrayInput from "../MyArrayInput";
 // import selectedImage from "./ImageUploadButton";
 import {
   Box,
@@ -547,9 +547,11 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 // import yassir from '../assets/img/';
-
 import { useState } from "react";
 import React from "react";
+
+import { Message } from 'primereact/message';
+        
 // import ImageUploadButton from "./ImageUploadButton";
 // import { generateRandomPassword } from "./GenerateRandomPassword";
 const PostPage = () => {
@@ -559,24 +561,21 @@ const PostPage = () => {
   const [postDescription, setPostDescription] = useState("");
   const [postRequirement, setPostRequirement] = useState([]);
   const [postDeadline, setPostDeadline] = useState("");
-  const [postValue, setPostValue] = useState("");
-  const [postPhone, setPostPhone] = useState("");
-  const [postEmail, setPostEmail] = useState("");
-  const [postPost, setPostPost] = useState("");
   const [postCompany, setPostCompany] = useState("");
   const [postCompanyArray, setPostCompanyArray] = useState();
   const [arrayOfStrings, setArrayOfStrings] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [fieldColor, setFieldColor] = useState(true);
-  const [postId, setPostId] = useState("");
   // const [DataArray, setDataArray] = useState(true);
+  const apiUrl = process.env.REACT_APP_API_URL;
   const isTextFieldEmpty = (value) => {
     return value === "";
   };
 
   useEffect(() => {
     (async () => await Load())();
-  }, []);
+  }
+,[]
+);
 
   async function Load() {
     // console.log('load !!!!!!!!!!!')
@@ -585,7 +584,7 @@ const PostPage = () => {
     // result.data.forEach((player, index) => {
     //   // console.log(`Player ${index + 1}: ${player.playerFname}`);
     // });
-    const response = await fetch("http://127.0.0.1:8000/posts/list/");
+    const response = await fetch(`${apiUrl}/posts/list/`);
     const json = await response.json();
     setPosts(json);
     setPostCompanyArray(json.company);
@@ -594,14 +593,14 @@ const PostPage = () => {
     return json;
   }
 
-  const randomPassword = "generateRandomPassword(12)";
+  // const randomPassword = "generateRandomPassword(12)";
   async function save(event) {
     // setPostImage(selectedImage)
     toggleDialog3();
     // console.log("this is the url : " + postTitle, postDescription, arrayOfStrings,postDeadline, postCompany);
-    event.preventDefault();
+    // event.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/posts/create/", {
+      await axios.post(`${apiUrl}/posts/create/`, {
         // postTitle:,
         // postPassword: randomPassword,
         // postImage: selectedImage,
@@ -612,16 +611,19 @@ const PostPage = () => {
         description: postDescription,
         requirements: arrayOfStrings,
         deadline: postDeadline,
-        company: postCompany,
+        // company: 'pulse',
+        recruiter:'1'
       });
+      // <Alert variant="filled" severity="success">
+      //   Post Registation Successfully.
+      // </Alert>;
+      // <Message severity="info" text="Info Message" />
+
       alert("Post Registation Successfully");
       setPostTitle("");
       setPostDescription("");
       setPostRequirement("");
       setPostDeadline("");
-      setPostValue("");
-      setPostPhone("");
-      setPostEmail("");
       setPostCompany("");
       setArrayOfStrings([]);
       closepopup();
@@ -632,11 +634,12 @@ const PostPage = () => {
   }
   const handleImageUpload = (postImage) => {
     setPostImage(postImage);
+    console.log(postImage)
   };
-  async function deletePostById(postId) {
+  const deletePostById=async (postId) =>{
     try {
       // Send a DELETE request to the API endpoint with the post's ID
-      await axios.delete(`http://127.0.0.1:8000/posts/${postId}/delete/`);
+      await axios.delete(`${apiUrl}/posts/${postId}/delete/`);
 
       // If the request is successful, the post has been deleted
       console.log(`Post with ID ${postId} has been deleted.`);
@@ -647,14 +650,35 @@ const PostPage = () => {
     }
   }
 
+  // async function updatePost(updatedData) {
+  //   console.log("voila le nom du post updated : " + updatedData.postTitle);
+  //   try {
+  //     const response = await axios.put(
+  //       `http://localhost:8080/posts`,
+  //       updatedData
+  //     );
+
+  //     if (response.status === 200) {
+  //       // Handle a successful update (e.g., show a success message)
+  //       console.log(`Post with ID has been updated.`);
+  //       // Reload the post data if needed
+  //       Load();
+  //     } else {
+  //       // Handle errors (e.g., show an error message)
+  //       console.error(`Error updating post with ID : ${response.statusText}`);
+  //     }
+  //   } catch (error) {
+  //     // Handle any network errors or exceptions
+  //     console.error(`Error updating post: ${error.message}`);
+  //   }
+  // }
   async function updatePost(updatedData) {
-    console.log("voila le nom du post updated : " + updatedData.postTitle);
+    console.log("test 2", updatedData);
     try {
       const response = await axios.put(
-        `http://localhost:8080/posts`,
+        `${apiUrl}/posts/${updatedData.postid}/update/`,
         updatedData
       );
-
       if (response.status === 200) {
         // Handle a successful update (e.g., show a success message)
         console.log(`Post with ID has been updated.`);
@@ -714,11 +738,11 @@ const PostPage = () => {
   // const filteredCards = posts.filter(post => post.company ===filter);
   // console.log("filter by Company  : ",filteredCards)
   const filteredCards = posts.filter((post) => {
-    const company = post.company.toLowerCase();
+    const job = post.title.toLowerCase();
     const filterLower = filter.toLowerCase();
 
     // Check if the company name starts with the filter string
-    return company.startsWith(filterLower);
+    return job.startsWith(filterLower);
   });
   console.log(filteredCards);
   const fakeDataArray = [
@@ -763,10 +787,10 @@ const PostPage = () => {
         <Stack direction={"row"} padding={2}>
           <Box flexGrow={3} borderRadius={8}></Box>
           <TextField
-          style={{marginRight:'30px'}}
+            style={{ marginRight: "30px" }}
             variant="standard"
             type="text"
-            placeholder="Filter by company"
+            placeholder="Filter by Job post"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
@@ -826,7 +850,7 @@ const PostPage = () => {
                     setPostDeadline(event.target.value);
                   }}
                 ></TextField>
-                <TextField
+                {/* <TextField
                   // noValidate
                   variant="outlined"
                   label="Company"
@@ -835,7 +859,7 @@ const PostPage = () => {
                   onChange={(event) => {
                     setPostCompany(event.target.value);
                   }}
-                ></TextField>
+                ></TextField> */}
                 {/* <TextField variant="outlined" label="Weight"></TextField> */}
               </Stack>
               <Stack direction="row" alignItems="center" spacing={2}>
@@ -870,28 +894,22 @@ const PostPage = () => {
                       theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
                   },
                 }}
-                onClick={
-                  save
-                  // () => {
-                  //   if (
-                  //     isTextFieldEmpty(
-                  //       postTitle &
-                  //         postDescription &
-                  //         postRequirement &
-                  //         postDeadline &
-                  //         postCompany
-                  //     )
-                  //   ) {
-                  //     save();
-                  //   } else {
-                  //     window.alert("Veillez remplir les champs obligatoires!");
-                  //     // noValidate
-                  //     // setFieldColor(false);
-                  //     // console.log("test2");
-                  //     // functionopenpopup2();
-                  //   }
-                  // }
-                }
+                onClick={() => {
+                  console.log(
+                    postTitle,
+                    postDescription,
+                    arrayOfStrings.length,
+                    postDeadline,
+                    postCompany
+                  );
+                  if ((postTitle==='' || arrayOfStrings.length===0 || arrayOfStrings.some(item => item === ''))){
+                    <Message severity="error" text="Error Message" />
+                    window.alert("Veillez remplir les champs obligatoires!");
+                  } else {
+                    save()
+                    
+                  }
+                }}
               >
                 ADD POST
               </Button>{" "}
@@ -1042,7 +1060,7 @@ const PostPage = () => {
                     deadline={post.deadline}
                     company={post.company}
                     onDeletePost={deletePostById}
-                    // updatePost={updatePost}
+                    updatePost={updatePost}
                     handleImageUpload={handleImageUpload}
                   />
                 </div>

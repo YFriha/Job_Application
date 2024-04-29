@@ -1,13 +1,11 @@
-import Calendar from "views/Calendar";
+import Calendar from "views/Calendar/Calendar";
 import Chat from "views/Chat";
 import Dashboard from "views/Dashboard.jsx";
-import Notifications from "views/Notifications.jsx";
-import TableList from "views/Tables.jsx";
-import UserPage from "views/User.jsx";
+import TableList from "views/Candidates/Tables.jsx";
+import UserPage from "views/user/User.jsx";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // import Post from "views/PostView";
-import ExampleWithProviders from "views/PostView/postView";
-import Example from "views/Post";
+import Example from "views/Posts/Post";
 // import Kanban from "views/kanban";
 var routes = [
   {

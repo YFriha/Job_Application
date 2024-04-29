@@ -11,7 +11,7 @@ import AdminLayout from "layouts/Admin.js";
 import Login from "views/Auth/Login";
 import './views/index.css'
 import Home from "views/client/Home";
-import PostDetails from "views/PostDetails";
+import PostDetails from "views/Posts/PostDetails";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -21,7 +21,7 @@ root.render(
       <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
-      <Route path='/post/Postdetails/:imageSrc/:title/:description/:requirement?/:deadline/:company' element={<PostDetails />} />
+      <Route path='/post/Postdetails/:postid/:imageSrc/:title/:description/:requirement?/:deadline/:company' element={<PostDetails />} />
 
     </Routes>
   </BrowserRouter>

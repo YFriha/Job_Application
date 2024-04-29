@@ -2,7 +2,7 @@
 import PropTypes from "prop-types"; // Import PropTypes
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import MyArrayInput from "./MyArrayInput";
+import MyArrayInput from "../MyArrayInput";
 
 import {
   Dialog,
@@ -14,12 +14,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { CreateOutlined, DeleteOutlined } from "@mui/icons-material";
+import { CreateOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 // import ImageUploadButton from "./ImageUploadButton";
 // import PropTypes from 'prop-types';
 // import axios from "axios";
 import axios from "axios";
+import AlertDialogSlide from "../../components/Dialog/AlertDialogSlide";
 
 function CardPost({
   postid,
@@ -30,17 +31,17 @@ function CardPost({
   deadline,
   company,
   onDeletePost,
-  // updatePost,
-  post,
-  // handleImageUpload,
+  updatePost
 }) {
-  // console.log("first Test ", title, description);
   const navigate = useNavigate();
 
   const routeChange = () => {
     const path = `/post/Postdetails/${encodeURIComponent(
+      postid
+    )}/${encodeURIComponent(
       imageSrc
-    )}/${encodeURIComponent(title)}/${encodeURIComponent(
+    )}
+    /${encodeURIComponent(title)}/${encodeURIComponent(
       description
     )}/${encodeURIComponent(requirement)}/${encodeURIComponent(
       deadline
@@ -49,14 +50,12 @@ function CardPost({
     navigate(path);
   };
 
-  const [arrayOfStrings, setArrayOfStrings] = useState([]);
   const [postTitle, setPostFname] = useState(title);
   const [postDescription, setPostDescription] = useState(description);
   const [postRequirement, setPostRequirement] = useState(requirement);
   const [postDeadline, setPostDeadline] = useState(deadline);
   const [postCompany, setPostValue] = useState(company);
   const [selectedImage, setSelectedImage] = useState(imageSrc);
-  const [updatedDB, setUpdatedDB] = useState([]);
   useEffect(() => {
     // requirement.forEach((req, index) => {
     console.log("this is the req :: ", imageSrc);
@@ -64,61 +63,27 @@ function CardPost({
   }, []);
   async function handleUpdatePost() {
     closepopup4();
-    // console.log("the new image : "+ selectedImage)
+    console.log("the post id for deleting is : "+ postid)
     const updatedPostData = {
-      // postid: id,
+      postid: postid,
+      recruiter: '1',
+      image:imageSrc,
       title: postTitle,
       description: postDescription,
       requirements: postRequirement,
       deadline: postDeadline,
-      company: postCompany,
+      company: 'pulse',
     };
     console.log("test 1", updatedPostData);
     updatePost(updatedPostData);
   }
-  async function updatePost(updatedData) {
-    console.log("test 2", updatedData);
-    try {
-      const response = await axios.put(
-        `http://127.0.0.1:8000/posts/${postid}/update/`,
-        updatedData
-      );
-      if (response.status === 200) {
-        // Handle a successful update (e.g., show a success message)
-        console.log(`Post with ID has been updated.`);
-        // Reload the post data if needed
-        // Load();
-      } else {
-        // Handle errors (e.g., show an error message)
-        console.error(`Error updating post with ID : ${response.statusText}`);
-      }
-    } catch (error) {
-      // Handle any network errors or exceptions
-      console.error(`Error updating post: ${error.message}`);
-    }
-  }
   // async function updatePost(updatedData) {
-  //   setUpdatedDB([
-  //     {
-  //       "id": 8,
-  //       "title": "devOps",
-  //       "description": "developer",
-  //       "requirements": [
-  //           "DevOps",
-  //           "Deployament"
-  //       ],
-  //       "deadline": "2024-11-14",
-  //       "company": "pulse"
-  //   }
-  //   ]);
-  //   console.log("voila le nom du post updated : " + updatedDB);
+  //   console.log("test 2", updatedData);
   //   try {
   //     const response = await axios.put(
-  //       `http://127.0.0.1:8000/posts/5/update/`,
-  //       updatedDB
+  //       `http://127.0.0.1:8000/posts/${postid}/update/`,
+  //       updatedData
   //     );
-  //     console.log(updatedDB)
-
   //     if (response.status === 200) {
   //       // Handle a successful update (e.g., show a success message)
   //       console.log(`Post with ID has been updated.`);
@@ -134,60 +99,6 @@ function CardPost({
   //   }
   // }
 
-  // const updatePost = async (updatedData) => {
-  //   console.log("Data updated : ", updatedData);
-
-  //   try {
-  //   const response = await fetch("http://127.0.0.1:8000/posts/8/update/", {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(updatedData),
-  //   });
-  //   if (!response.ok) {
-  //     throw new Error(`Failed to update data: ${response.statusText}`);
-  //   }
-  //   console.log("Data updated successfully");
-  //   // Optionally, you can fetch the updated data again or perform other actions
-  // } catch (error) {
-  //   console.error("Error updating data:", error);
-  // }
-  // try
-  //  const response = await fetch('http://127.0.0.1:8000/posts/list/');
-  //     const result = await response.json();
-  //     console.log(result);
-  // setData(result);
-  //         const response = await axios.put(
-  //           'http://127.0.0.1:8000/posts/5/update/',
-  //           updatedData
-  //         );
-
-  //         if (response.status === 200) {
-  //           // Handle a successful update (e.g., show a success message)
-  //           console.log(`Post with ID has been updated.`);
-  //           // Reload the post data if needed
-  //           // Load();
-  //         } else {
-  //           // Handle errors (e.g., show an error message)
-  //           console.error(`Error updating post with ID : ${response.statusText}`);
-  //         }
-  //       } catch (error) {
-  //         // Handle any network errors or exceptions
-  //         console.error(`Error updating post: ${error.message}`);
-  //       }
-  // };
-  async function handleDeletePost() {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this post?"
-    );
-    if (confirmDelete) {
-      onDeletePost(postid);
-    }
-  }
-  const handleImageUpload = (imageUrl) => {
-    setSelectedImage(imageUrl);
-  };
   const theme = useTheme();
   const [open4, openchange4] = useState(false);
 
@@ -197,43 +108,6 @@ function CardPost({
   const closepopup4 = () => {
     openchange4(false);
   };
-  async function deletePostById(postid) {
-    console.log(postid);
-    try {
-      // Send a DELETE request to the API endpoint with the post's ID
-      await axios.delete(`http://127.0.0.1:8000/posts/${postid}/delete/`);
-
-      // If the request is successful, the post has been deleted
-      console.log(`Post with ID ${postid} has been deleted.`);
-      // Load();
-    } catch (error) {
-      // Handle any errors that occur during the deletion process
-      console.error(`Error deleting post with ID ${postid}: ${error.message}`);
-    }
-  }
-
-  // async function updatePost(updatedData) {
-  //   console.log("voila le nom du post updated : " + updatedData.postTitle);
-  //   try {
-  //     const response = await axios.put(
-  //       `http://localhost:8080/posts`,
-  //       updatedData
-  //     );
-
-  //     if (response.status === 200) {
-  //       // Handle a successful update (e.g., show a success message)
-  //       console.log(`Post with ID has been updated.`);
-  //       // Reload the post data if needed
-  //       // Load();
-  //     } else {
-  //       // Handle errors (e.g., show an error message)
-  //       console.error(`Error updating post with ID : ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     // Handle any network errors or exceptions
-  //     console.error(`Error updating post: ${error.message}`);
-  //   }
-
   return (
     <div className="card">
       <img src={imageSrc} alt={title} className="card-image img-responsive" />
@@ -252,7 +126,6 @@ function CardPost({
               {req}
               {index !== requirement.length - 1 ? ", " : "."}
               <br />
-              {/* Add comma if not the last requirement, otherwise add a dot */}
             </span>
           ))}
         </p>
@@ -279,14 +152,11 @@ function CardPost({
                 cursor: "pointer",
                 transition: "transform 0.6s ease-in-out",
                 marginTop: "20px",
-                // marginLeft:"10px"
-                // paddingLeft:"40px"
               }}
             >
               More details
             </Button>
           </div>
-          {/* <Box ></Box>   */}
           <div
             style={{
               marginTop: "20px",
@@ -303,17 +173,7 @@ function CardPost({
             >
               <CreateOutlined />
             </IconButton>
-            <IconButton
-              sx={{
-                color: "#9f9f9f",
-              }}
-              onClick={() => deletePostById(postid)}
-              // onClick={handleDeletePost}
-              color="inherit"
-              aria-label="delete"
-            >
-              <DeleteOutlined />
-            </IconButton>
+            <AlertDialogSlide id={postid} onDeletePost={onDeletePost} />
           </div>
         </div>
       </div>
@@ -357,19 +217,6 @@ function CardPost({
                 ></TextField>
               </div>
             </div>
-            {/* <div className="row">
-              <div className="col">
-                <TextField
-                  variant="outlined"
-                  label="Requirements"
-                  postId="postRequirement"
-                  value={postRequirement}
-                  onChange={(event) => {
-                    setPostRequirement(event.target.value);
-                  }}
-                ></TextField>
-              </div>
-            </div> */}
             <MyArrayInput
               value={postRequirement}
               onChange={setPostRequirement}
@@ -403,21 +250,12 @@ function CardPost({
               </div>
             </div>
             <div className="row">
-              {/* <ImageUploadButton
-                onImageUpload={
-                  handleImageUpload}
-              /> */}
             </div>
-
-            {/* <text>Additional informations</text> */}
-            {/* <p className="lead">Login : {postTitle}.{postDescription}@intelltrac.com </p>
-                <p className="lead">Password : {randomPassword} </p> */}
             <Stack direction="row" alignItems="center" spacing={2}></Stack>
           </Stack>
         </DialogContent>
 
         <DialogActions>
-          {/* <generateRandomPassword length = "16" /> */}
           <Button
             color="primary"
             variant="contained"
@@ -444,15 +282,10 @@ CardPost.propTypes = {
   requirement: PropTypes.arrayOf(PropTypes.string).isRequired,
   deadline: PropTypes.string.isRequired,
   company: PropTypes.string.isRequired,
-  // value: PropTypes.string.isRequired,
-  // poste: PropTypes.string.isRequired,
   onDeletePost: PropTypes.func.isRequired,
   postid: PropTypes.string,
-  // postImage: PropTypes.string.isRequired,
-  // updatePost: PropTypes.func.isRequired,
   handleImageUpload: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
-  // postObj: PropTypes.object.isRequired,
 };
 
 export default CardPost;
