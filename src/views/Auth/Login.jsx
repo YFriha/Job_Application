@@ -1,96 +1,229 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./login.css";
 import { FaGoogle, FaFacebook } from "react-icons/fa"; // Import Google and Facebook icons
-import { Navigate, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Toast } from "primereact/toast";
+import ToggleButton from "components/ToggleButton/ToggleButton";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { InputSwitch } from "primereact/inputswitch";
+import { Dropdown } from "primereact/dropdown";
+// import InputSwitch from 'components/InputSwitch/InputSwitch'
 export default function Login(props) {
   let [authMode, setAuthMode] = useState("signin");
-  const email1 = document.getElementById("email1");
-  const email2 = document.getElementById("email2");
-  const name = document.getElementById("name2");
-  const password1 = document.getElementById("password1");
-  const password2 = document.getElementById("password2");
+  let [isChecked, setIsChecked] = useState(true);
+  const theme = useTheme();
+  const [login, setLogin] = useState("");
+  const [role, setRole] = useState("c");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [company, setComapny] = useState("");
+  const [type, setType] = useState("");
+  const toast = useRef(null);
+  const [selectedGender, setSelectedGender] = useState("m");
+  const [accessToken, setAccessToken] = useState("");
+  const [refreshToken, setRefreshToken] = useState("");
+  // const genderValue = mapGenderToValue(selectedGender);
+  const gender = [{ name: "Male" }, { name: "Female" }];
 
-  const changeAuthMode = () => {
-    if (email1) {
-      email1.value = "";
+  const [isSwitchChecked, setIsSwitchChecked] = useState(false);
+
+  // const handleSwitchChange = () => {
+  //   setRole('r');
+  //   console.log('isChecked!!', isSwitchChecked)
+  //   setIsSwitchChecked(isSwitchChecked);
+  // };
+  useEffect(() => {
+    setType("recruiter");
+  }, []);
+  useEffect(() => {
+    console.log("===>", type);
+  }, [type]);
+
+  function mapGenderToValue(selectedOption) {
+    console.log("option : ", selectedOption);
+    switch (selectedOption.name) {
+      case "Male":
+        return "m";
+      case "Female":
+        return "f";
+      // Add more cases if needed
+      default:
+        return null; // Return null for invalid or unknown options
     }
-    if (email2) {
-      email2.value = "";
-    }
-    if (name) {
-      name.value = "";
-    }
-    if (password1) {
-      password1.value = "";
-    }
-    if (password2) {
-      password2.value = "";
-    }
-    setAuthMode(authMode === "signin" ? "signup" : "signin");
-  }; 
-  // Get the history object
-    const navigate = useNavigate();
-  function redirectToDashboard() {
-   
-  
-    // Redirect to the dashboard component
-    navigate("/admin/dashboard");
   }
 
+  const changeAuthMode = () => {
+    setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
+  const check = () => {
+    setIsChecked(isChecked === true ? "signup" : "signin");
+  };
+  // Get the history object
+  const navigate = useNavigate();
+  function redirectToDashboard() {
+    // Redirect to the dashboard component
+    // connexion();
+    navigate("/admin/dashboard");
+  }
+  // async function connexion() {
+  //   const response = await fetch('authentication/login/');
+  //   const json = await response.json();
+  //   console.log(json);
+  //   return json;
+  // }
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  async function connexion(event) {
+    console.log(login, password);
+    try {
+      const response = await axios.post(`${apiUrl}authentication/login/`, {
+        email: login,
+        password: password,
+      });
+      console.log(response.data);
+      setRefreshToken(response.data.refresh_token);
+      setAccessToken(response.data.access_token);
+      // console.log('access : ', accessToken, 'refresh : ', refreshToken);
+      // Storing accessToken in localStorage
+    localStorage.setItem('accessToken', response.data.access_token);
+      redirectToDashboard();
+      setLogin("");
+      setPassword("");
+      toast.current.show({
+        severity: "success",
+        summary: "Successful",
+        detail: "Logged in",
+        life: 3000,
+      });
+    } catch (err) {
+      alert("Post Registration Failed!");
+    }
+  }
+  
+  useEffect(() => {
+    console.log('access : ', accessToken, 'refresh : ', refreshToken);
+  });
+  
+  async function registration(event) {
+    console.log(name, type, email, password2, role, genderValue, company);
+    try {
+      await axios.post(`${apiUrl}authentication/signup/`, {
+        type: type,
+        username: name,
+        email: email,
+        password: password2,
+        role: role,
+        gender: genderValue,
+        company: company,
+      });
+
+      // alert("Post Registation Successfully");
+      setName("");
+      setPassword2("");
+      setEmail("");
+      setComapny("");
+      setSelectedGender("Male");
+      // toast.current.show({
+      //   severity: "success",
+      //   summary: "Successful",
+      //   detail: "Loged in",
+      //   life: 3000,
+      // });
+      toast.current.show({
+        severity: "secondary",
+        summary: "Secondary",
+        detail: "User created",
+        life: 3000,
+      });
+    } catch (err) {
+      alert("post Registation Failed");
+    }
+  }
+  const genderValue = mapGenderToValue(selectedGender);
+  const changeRole = () => {
+    if (role === "r") {
+      setRole("c");
+      // setType("candidate");
+      console.log("type : ", type);
+    } else {
+      setRole("r");
+      // setType("recruiter");
+      console.log("type : ", type);
+    }
+  };
   if (authMode === "signin") {
-    if (email1) {
-      email1.value = "";
-    }
-    // if (email2) {
-    //   email2.value = "";
-    // }
-    // if (name) {
-    //   name.value = "";
-    // }
-    if (password1) {
-      password1.value = "";
-    }
-    // if (password2) {
-    //   password2.value = "";
-    // }
     return (
       <div className="Auth-form-container">
+              <Toast ref={toast} />
+
         <form className="Auth-form">
           <div className="Auth-form-content">
             <center>
-          <img src={require("assets/img/logo-black.png")} alt="Logo" />
-        </center>
+              <img src={require("assets/img/logo-black.png")} alt="Logo" />
+            </center>
             <h3 className="titleClr text-center">Sign In</h3>
-            
+
             <div className="text-center">
               Not registered yet?{" "}
-              <span className="link-primary cursor-pointer" onClick={changeAuthMode}>
+              <span
+                className="link-primary cursor-pointer"
+                onClick={changeAuthMode}
+              >
                 Sign Up
               </span>
             </div>
             <div className="form-group mt-3">
-              <label>Email address</label>
-              <input
-              id="email1"
-                type="email"
-                className="form-control mt-1"
-                placeholder="Enter email"
-              />
-            </div>
-            <div className="form-group mt-3">
-              <label>Password</label>
-              <input
-              id="password1"
-                type="password"
-                className="form-control mt-1"
-                placeholder="Enter password"
-              />
+              <Stack spacing={3} margin={0}>
+                <TextField
+                  variant="outlined"
+                  label="Login"
+                  id="login"
+                  value={login}
+                  onChange={(event) => {
+                    setLogin(event.target.value);
+                  }}
+                ></TextField>
+                <TextField
+                  variant="outlined"
+                  label="Password"
+                  id="password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                  }}
+                ></TextField>
+              </Stack>
             </div>
             <div className="d-grid gap-2 mt-3">
-              <button type="submit" className="btn subBtn" onClick={redirectToDashboard}>
-                Submit
-              </button>
+              <Button
+                color="primary"
+                variant="contained"
+                sx={{
+                  bgcolor:
+                    theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
+                  ":hover": {
+                    bgcolor:
+                      theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
+                  },
+                }}
+                onClick={connexion}
+                // onClick={functionopenpopup3}
+              >
+                CONNEXION
+              </Button>
             </div>
             <div className="d-flex justify-content-center mt-3">
               <button className="btn googleBtn  me-2">
@@ -101,75 +234,138 @@ export default function Login(props) {
               </button>
             </div>
             <p className="text-center mt-2">
-              Forgot <a href="#" className="custom-gray-text">password?</a>
+              Forgot{" "}
+              <a href="#" className="custom-gray-text">
+                password?
+              </a>
             </p>
           </div>
         </form>
       </div>
     );
   }
-  if (email1) {
-    email1.value = "";
-  }
-  if (email2) {
-    email2.value = "";
-  }
-  if (name) {
-    name.value = "";
-  }
-  if (password1) {
-    password1.value = "";
-  }
-  if (password2) {
-    password2.value = "";
-  }
-  return (
-    
 
+  return (
     <div className="Auth-form-container">
+      <Toast ref={toast} />
       <form className="Auth-form">
         <div className="Auth-form-content">
-        <center>
-          <img src={require("assets/img/logo-black.png")} alt="Logo" />
-        </center>
+          <center>
+            <img src={require("assets/img/logo-black.png")} alt="Logo" />
+          </center>
           <h3 className="titleClr text-center">Sign Up</h3>
           <div className="text-center">
             Already registered?{" "}
-            <span className="link-primary cursor-pointer" onClick={changeAuthMode}>
+            <span
+              className="link-primary cursor-pointer"
+              onClick={changeAuthMode}
+            >
               Sign In
             </span>
           </div>
-          <div className="form-group mt-3">
-            <label>Full Name</label>
-            <input
-            id="name2"
-              type="name "
-              className="form-control mt-1"
-              placeholder="Name"
+          <Stack spacing={3} margin={0}>
+            <TextField
+              variant="outlined"
+              label="Name"
+              id="name"
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value);
+              }}
+            ></TextField>
+            <TextField
+              variant="outlined"
+              label="Email"
+              id="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+              }}
+            ></TextField>
+            <TextField
+              variant="outlined"
+              label="Password"
+              id="password2"
+              value={password2}
+              onChange={(event) => {
+                setPassword2(event.target.value);
+              }}
+            ></TextField>
+            <Dropdown
+              value={selectedGender}
+              onChange={(e) => setSelectedGender(e.value)}
+              options={gender}
+              optionLabel="name"
+              placeholder="Select your Gender"
+              className="w-full md:w-14rem"
+              checkmark={true}
+              highlightOnSelect={false}
             />
-          </div>
-          <div className="form-group mt-3">
-            <label>Email address</label>
-            <input
-            id="email2"
-              type="email"
-              className="form-control mt-1"
-              placeholder="Email Address"
-            />
-          </div>
-          <div className="form-group mt-3">
-            <label>Password</label>
-            <input
-            id="password2"
-              type="password"
-              className="form-control mt-1"
-              placeholder="Password"
-            />
-          </div>
+            <Stack spacing={0} margin={0}>
+              <div className="row">
+                <div className="col">
+                  <Typography
+                    fontSize={18}
+                    fontFamily={"sans-serif"}
+                    color={
+                      theme.palette.mode === "dark" ? "#009688" : "#9cd6d1"
+                    }
+                  >
+                    Are you recruter ?
+                  </Typography>
+                </div>
+                <div className="col">
+                  <InputSwitch
+                    onChange={(e) => {
+                      setIsSwitchChecked(e.value);
+                      // setRole("r");
+                      isSwitchChecked
+                        ? setType("candidate")
+                        : setType("recruiter");
+                      console.log(type);
+                      // changeRole();
+                    }}
+                    checked={isSwitchChecked}
+                  />
+                </div>
+              </div>
+            </Stack>
+            {isSwitchChecked ? (
+              <>
+                {/* {setType("recruiter")}  */}
+                <TextField
+                  variant="outlined"
+                  label="Company"
+                  id="company"
+                  value={company}
+                  onChange={(event) => {
+                    setComapny(event.target.value); // Typo corrected from setComapny to setCompany
+                  }}
+                ></TextField>
+              </>
+            ) : (
+              ""
+              // <>
+              //   {setType("candidate")} {/* Move this outside */}
+              //   {console.log(type)}
+              // </>
+            )}
+          </Stack>
           <div className="d-grid gap-2 mt-3 ">
-            <button type="submit" className="btn subBtn">
-              Submit
-            </button>
+            <Button
+              color="primary"
+              variant="contained"
+              sx={{
+                bgcolor: theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
+                ":hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
+                },
+              }}
+              onClick={registration}
+            >
+              SUBMIT
+            </Button>
           </div>
           <div className="d-flex justify-content-center mt-3 ">
             <button className="btn googleBtn me-2">
@@ -180,7 +376,10 @@ export default function Login(props) {
             </button>
           </div>
           <p className="text-center mt-2">
-            Forgot <a href="#" className="custom-gray-text">password?</a>
+            Forgot{" "}
+            <a href="#" className="custom-gray-text">
+              password?
+            </a>
           </p>
         </div>
       </form>

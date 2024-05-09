@@ -45,10 +45,10 @@ const candidates = [
     address: "2 Vermont Junction",
   },]
 
-export default function PostDetails() {
+export default function InternDetails() {
   const [data, setData] = useState([]);
 
-  const { postid,imageSrc, title, description, requirement, deadline } =
+  const { internid,imageSrc, title, description, requirement, deadline } =
     useParams();
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
 
@@ -83,8 +83,8 @@ export default function PostDetails() {
   // console.log(filteredCards);
 
   async function Load() {
-    console.log("postId : ",postid);
-    const response = await fetch(`http://127.0.0.1:8000/posts/${postid}/findCandidate/`);
+    console.log("internId : ",internid);
+    const response = await fetch(`http://127.0.0.1:8000/interns/${internid}/findCandidate/`);
     const json = await response.json();
     setData(json);
     // setFiltredCand(json)
@@ -115,7 +115,7 @@ export default function PostDetails() {
             </Typography>
 
             <div
-              className="row  p-3 mb-5 rounded float-sm-left"
+              className="row shadow-lg p-3 mb-5 rounded float-sm-left"
               style={{
                 border: " #cecece",
                 backgroundColor: "#ffffff",
@@ -136,8 +136,8 @@ export default function PostDetails() {
                 />
               </div>
               <div className="col-md-6">
-                <div className="">
-                  <table className="table">
+                <div className="table-responsive">
+                  <table className="table table-user-information">
                     <tbody>
                       <tr>
                         <td
@@ -224,7 +224,7 @@ export default function PostDetails() {
       {isSwitchChecked ? (
         <ControlledBoard candidates={data} />
       ) : (
-        <DataTable candidates={data} knob={true} />
+        <DataTable candidates={data} />
       )}
     </div>
           </div>

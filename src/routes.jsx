@@ -6,6 +6,8 @@ import UserPage from "views/user/User.jsx";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // import Post from "views/PostView";
 import Example from "views/Posts/Post";
+import InternPage from "views/interns/internship";
+import Switcher from "views/interns/Switcher";
 // import Kanban from "views/kanban";
 var routes = [
   {
@@ -15,18 +17,32 @@ var routes = [
     component: <Dashboard />,
     layout: "/admin",
   },
-  // {
-  //   path: "/post",
-  //   name: "POSTS",
-  //   icon: "fas fa-file-alt",
-  //   component: <Example />,
-  //   layout: "/admin",
-  // },
+  {
+    path: "/user-page",
+    name: "User Profile",
+    icon: "fas fa-user-alt",
+    component: <UserPage />,
+    layout: "/admin",
+  },
   {
     path: "/post/PostDetails/*",
     name: "POSTS",
     icon: "fas fa-file-alt",
     component: <Example />,
+    layout: "/admin",
+  },  
+  // {
+  //   path: "/intern/InternDetails/*",
+  //   name: "INTERNSHIPS",
+  //   icon: "fas fa-file-alt",
+  //   component: <InternPage />,
+  //   layout: "/admin",
+  // },
+  {
+    path: "/intern/InternDetails/*",
+    name: "INTERNSHIPS",
+    icon: "fas fa-file-alt",
+    component: <Switcher />,
     layout: "/admin",
   },
   {
@@ -36,13 +52,7 @@ var routes = [
     component: <TableList />,
     layout: "/admin",
   },
-  {
-    path: "/user-page",
-    name: "User Profile",
-    icon: "fas fa-user-alt",
-    component: <UserPage />,
-    layout: "/admin",
-  },
+  
   {
     path: "/Chat",
     name: "Chat",

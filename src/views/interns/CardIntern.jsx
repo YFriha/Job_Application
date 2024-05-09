@@ -22,78 +22,79 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import AlertDialogSlide from "../../components/Dialog/AlertDialogSlide";
 
-function CardPost({
-  postid,
-  imageSrc,
-  title,
-  description,
-  requirement,
+function CardIntern({
+  internid,
+  // imageSrc,
+  subject,
+  email,
+  location,
   deadline,
-  company,
-  onDeletePost,
-  updatePost,
+  recruiter,
+  onDeleteIntern,
+  updateIntern,
 }) {
   const navigate = useNavigate();
 
   const routeChange = () => {
-    const path = `/post/Postdetails/${encodeURIComponent(
-      postid
-    )}/${encodeURIComponent(imageSrc)}
-    /${encodeURIComponent(title)}/${encodeURIComponent(
-      description
-    )}/${encodeURIComponent(requirement)}/${encodeURIComponent(
+    const path = `/intern/Interndetails/${encodeURIComponent(
+      internid
+    // )}/${encodeURIComponent(imageSrc
+    )}
+    /${encodeURIComponent(subject)}/${encodeURIComponent(
+      email
+    )}/${encodeURIComponent(location)}/${encodeURIComponent(
       deadline
-    )}/${encodeURIComponent(company)}`;
+    )}/${encodeURIComponent(recruiter)}`;
 
     navigate(path);
   };
 
-  const [postTitle, setPostFname] = useState(title);
-  const [postDescription, setPostDescription] = useState(description);
-  const [postRequirement, setPostRequirement] = useState(requirement);
-  const [postDeadline, setPostDeadline] = useState(deadline);
-  const [postCompany, setPostValue] = useState(company);
-  const [selectedImage, setSelectedImage] = useState(imageSrc);
+  const [internTitle, setInternFname] = useState(subject);
+  const [internDescription, setInternDescription] = useState(email);
+  const [internRequirement, setInternRequirement] = useState(location);
+  const [internDeadline, setInternDeadline] = useState(deadline);
+  const [internCompany, setInternValue] = useState(recruiter);
+  // const [selectedImage, setSelectedImage] = useState(imageSrc);
   useEffect(() => {
-    // requirement.forEach((req, index) => {
-    console.log("this is the req :: ", imageSrc);
+    // location.forEach((req, index) => {
+    // console.log("this is the req :: ", imageSrc);
     // setUpdatedDB([]);
   }, []);
-  async function handleUpdatePost() {
+  async function handleUpdateIntern() {
     closepopup4();
-    console.log("the post id for deleting is : " + postid);
-    const updatedPostData = {
-      postid: postid,
+    console.log("the intern id for deleting is : " + internid);
+    const updatedInternData = {
+      internid: internid,
       recruiter: "1",
-      image: imageSrc,
-      title: postTitle,
-      description: postDescription,
-      requirements: postRequirement,
-      deadline: postDeadline,
-      company: "pulse",
+      // image: imageSrc,
+      subject: internTitle,
+      email: internDescription,
+      requirements: internRequirement,
+      deadline: internDeadline,
+      recruiter: "pulse",
     };
-    console.log("test 1", updatedPostData);
-    updatePost(updatedPostData);
+    console.log("test 1", updatedInternData);
+    updateIntern(updatedInternData);
   }
-  // async function updatePost(updatedData) {
+  // async function updateIntern(updatedData) {
   //   console.log("test 2", updatedData);
   //   try {
   //     const response = await axios.put(
-  //       `http://127.0.0.1:8000/posts/${postid}/update/`,
+  //       `http://127.0.0.1:8000/interns/${internid}/update/`,
   //       updatedData
   //     );
   //     if (response.status === 200) {
   //       // Handle a successful update (e.g., show a success message)
-  //       console.log(`Post with ID has been updated.`);
-  //       // Reload the post data if needed
+  //       console.log(`Intern with ID has been updated.`);
+  //       // Reload the intern data if needed
   //       // Load();
   //     } else {
   //       // Handle errors (e.g., show an error message)
-  //       console.error(`Error updating post with ID : ${response.statusText}`);
+  //       console.error(`Error updating intern with ID : ${response.statusText}`);
   //     }
   //   } catch (error) {
   //     // Handle any network errors or exceptions
-  //     console.error(`Error updating post: ${error.message}`);
+  //     console.error(`Error updating intern: ${error.message}`);
   //   }
   // }
 
@@ -108,33 +109,37 @@ function CardPost({
   };
   return (
     <div className="card">
-      <img src={imageSrc} alt={title} className="card-image img-responsive" />
+      {/* <img src={imageSrc} alt={subject} className="card-image img-responsive" /> */}
       <div className="card-content">
-        <h2 className="card-title" style={{ color: "#9cd6d1" }}>
-          {title}
+        <h2 className="card-subject" style={{ color: "#9cd6d1" }}>
+          {subject}
         </h2>
-        <p className="card-description">
-          <span style={{ color: "#009688" }}>description :</span>
-          <span style={{ color: "#9f9f9f" }}>{description}</span>
+        <p className="card-email">
+          <span style={{ color: "#009688" }}>email :</span>
+          <span style={{ color: "#9f9f9f" }}>{email}</span>
         </p>
-        <p className="card-description">
+        <p className="card-email">
+          <span style={{ color: "#009688" }}>location :</span>
+          <span style={{ color: "#9f9f9f" }}>{location}</span>
+        </p>
+        {/* <p className="card-email">
           <span style={{ color: "#009688" }}>Requirements : </span>{" "}
-          {requirement.map((req, index) => (
+          {location.map((req, index) => (
             <span key={index} style={{ color: "#9f9f9f" }}>
               {req}
-              {index !== requirement.length - 1 ? ", " : "."}
+              {index !== location.length - 1 ? ", " : "."}
               <br />
             </span>
           ))}
-        </p>
+        </p> */}
 
-        <p className="card-description">
+        <p className="card-email">
           <span style={{ color: "#009688" }}>Deadline :</span>
           <span style={{ color: "#9f9f9f" }}>{deadline}</span>
         </p>
-        <p className="card-description">
-          <span style={{ color: "#009688" }}>Company :</span>{" "}
-          <span style={{ color: "#9f9f9f" }}>{company}</span>
+        <p className="card-email">
+          <span style={{ color: "#009688" }}>recruiter :</span>{" "}
+          <span style={{ color: "#9f9f9f" }}>{recruiter}</span>
         </p>
         <div className="row ">
           <div className="col-8">
@@ -171,7 +176,7 @@ function CardPost({
             >
               <CreateOutlined />
             </IconButton>
-            <AlertDialogSlide id={postid} onDeletePost={onDeletePost} />
+            <AlertDialogSlide id={internid} onDeleteIntern={onDeleteIntern} />
           </div>
         </div>
       </div>
@@ -189,46 +194,46 @@ function CardPost({
               fontFamily={"sans-serif"}
               color={theme.palette.mode === "dark" ? "#009688" : "#9cd6d1"}
             >
-              Update Post
+              Update Intern
             </Typography>
             <div className="row">
               <div className="col">
                 <TextField
                   variant="outlined"
                   label="Title"
-                  postId="postTitle"
-                  value={postTitle}
+                  internId="internTitle"
+                  value={subject}
                   onChange={(event) => {
-                    setPostFname(event.target.value);
+                    setInternFname(event.target.value);
                   }}
                 ></TextField>
               </div>
               <div className="col">
-                <TextField
+                {/* <TextField
                   variant="outlined"
                   label="Description"
-                  postId="postDescription"
-                  value={postDescription}
+                  internId="internDescription"
+                  value={internDescription}
                   onChange={(event) => {
-                    setPostDescription(event.target.value);
+                    setInternDescription(event.target.value);
                   }}
-                ></TextField>
+                ></TextField> */}
               </div>
             </div>
-            <MyArrayInput
-              value={postRequirement}
-              onChange={setPostRequirement}
-            />
+            {/* <MyArrayInput
+              value={internRequirement}
+              onChange={setInternRequirement}
+            /> */}
 
             <div className="row">
               <div className="col">
                 <TextField
                   variant="outlined"
                   label="Deadline"
-                  postId="postWeight"
-                  value={postDeadline}
+                  internId="internWeight"
+                  value={internDeadline}
                   onChange={(event) => {
-                    setPostDeadline(event.target.value);
+                    setInternDeadline(event.target.value);
                   }}
                 ></TextField>
               </div>
@@ -239,10 +244,10 @@ function CardPost({
                 <TextField
                   variant="outlined"
                   label="Company"
-                  postId="postCompany"
-                  value={postCompany}
+                  internId="internCompany"
+                  value={internCompany}
                   onChange={(event) => {
-                    setPostValue(event.target.value);
+                    setInternValue(event.target.value);
                   }}
                 ></TextField>
               </div>
@@ -262,7 +267,7 @@ function CardPost({
                 bgcolor: theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
               },
             }}
-            onClick={handleUpdatePost} // Pass a reference to the updatePost function
+            onClick={handleUpdateIntern} // Pass a reference to the updateIntern function
           >
             UPDATE
           </Button>
@@ -272,17 +277,17 @@ function CardPost({
   );
 }
 
-CardPost.propTypes = {
+CardIntern.propTypes = {
   imageSrc: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.number.isRequired,
-  requirement: PropTypes.arrayOf(PropTypes.string).isRequired,
+  subject: PropTypes.string.isRequired,
+  email: PropTypes.number.isRequired,
+  location: PropTypes.arrayOf(PropTypes.string).isRequired,
   deadline: PropTypes.string.isRequired,
-  company: PropTypes.string.isRequired,
-  onDeletePost: PropTypes.func.isRequired,
-  postid: PropTypes.string,
+  recruiter: PropTypes.string.isRequired,
+  onDeleteIntern: PropTypes.func.isRequired,
+  internid: PropTypes.string,
   handleImageUpload: PropTypes.func.isRequired,
-  post: PropTypes.object.isRequired,
+  intern: PropTypes.object.isRequired,
 };
 
-export default CardPost;
+export default CardIntern;

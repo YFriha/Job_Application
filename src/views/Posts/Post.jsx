@@ -596,16 +596,18 @@ const PostPage = () => {
   // const randomPassword = "generateRandomPassword(12)";
   async function save(event) {
     // setPostImage(selectedImage)
-    toggleDialog3();
+    toggleDialog3();console.log(arrayOfStrings);
     // console.log("this is the url : " + postTitle, postDescription, arrayOfStrings,postDeadline, postCompany);
     // event.preventDefault();
     try {
-      await axios.post(`${apiUrl}/posts/create/`, {
+      
+      await axios.post(`${apiUrl}posts/create/`, {
         // postTitle:,
         // postPassword: randomPassword,
         // postImage: selectedImage,
         // postId:id,
         // imageSrc: postImage,
+        
         image: postImage,
         title: postTitle,
         description: postDescription,
@@ -1048,7 +1050,7 @@ const PostPage = () => {
         <div className="app">
           {filteredCards.map(
             (post) => (
-              console.log("requirements :  ", post.image),
+              // console.log("requirements :  ", post.image),
               (
                 <div className="my-food" key={post.postId}>
                   <CardPost

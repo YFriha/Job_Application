@@ -6,10 +6,10 @@
     cursor: pointer;
   }
   .custom-gray-text {
-    color: rgb(255, 152, 67); /* or any other shade of gray you prefer */
+    color: #9cd6d1; /* or any other shade of gray you prefer */
   }
   .titleClr {
-    color: rgb(255, 152, 67); 
+    color: #9cd6d1; 
     font-family: 'Kanit', sans-serif !important;
 
 }
@@ -17,14 +17,14 @@
     color:red
 } */
 .subBtn{
-    background-color: rgb(255, 148, 61);
+    background-color: #9cd6d1;
 }
 .googleBtn{
-    background-color: rgb(255, 79, 66);
+    background-color: #EA4335;
     color: azure;
 }
 .fbBtn{
-    background-color: rgb(85, 207, 255);
+    background-color: #1877F2;
     color: azure;
 }
 

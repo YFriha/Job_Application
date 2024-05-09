@@ -18,7 +18,7 @@ function Tables() {
       try {
         const response = await fetch("http://127.0.0.1:8000/candidates/list/");
         const result = await response.json();
-        console.log(result);
+        console.log('Data is : ',result);
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -221,7 +221,7 @@ function Tables() {
       {isSwitchChecked ? (
         <ControlledBoard candidates={candidates} />
       ) : (
-        <DataTable candidates={data} />
+        <DataTable candidates={data} Knob={false} />
       )}
     </div>
   );
