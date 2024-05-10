@@ -18,7 +18,41 @@ import {
 } from "@mui/material";
 import { InputSwitch } from "primereact/inputswitch";
 import { Dropdown } from "primereact/dropdown";
-// import InputSwitch from 'components/InputSwitch/InputSwitch'
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, InputAdornment } from "@mui/material";
+
+const PasswordInput = ({ password, handlePassword, required }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <TextField
+      // size="small"
+      type={showPassword ? "text" : "password"}
+      label="Password"
+      value={password}
+      onChange={handlePassword}
+      required={required}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPassword}
+              edge="end"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+      // fullWidth
+    />
+  );
+};
 export default function Login(props) {
   let [authMode, setAuthMode] = useState("signin");
   let [isChecked, setIsChecked] = useState(true);
@@ -40,13 +74,18 @@ export default function Login(props) {
 
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
   // const handleSwitchChange = () => {
   //   setRole('r');
   //   console.log('isChecked!!', isSwitchChecked)
   //   setIsSwitchChecked(isSwitchChecked);
   // };
   useEffect(() => {
-    setType("recruiter");
+    setType("candidate");
   }, []);
   useEffect(() => {
     console.log("===>", type);
@@ -75,15 +114,9 @@ export default function Login(props) {
   const navigate = useNavigate();
   function redirectToDashboard() {
     // Redirect to the dashboard component
-    // connexion();
     navigate("/admin/dashboard");
   }
-  // async function connexion() {
-  //   const response = await fetch('authentication/login/');
-  //   const json = await response.json();
-  //   console.log(json);
-  //   return json;
-  // }
+  
   const apiUrl = process.env.REACT_APP_API_URL;
 
   async function connexion(event) {
@@ -96,9 +129,10 @@ export default function Login(props) {
       console.log(response.data);
       setRefreshToken(response.data.refresh_token);
       setAccessToken(response.data.access_token);
-      // console.log('access : ', accessToken, 'refresh : ', refreshToken);
-      // Storing accessToken in localStorage
-    localStorage.setItem('accessToken', response.data.access_token);
+      // Storing accessToken in localStorage====================================
+      localStorage.setItem("accessToken", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token);
+
       redirectToDashboard();
       setLogin("");
       setPassword("");
@@ -112,11 +146,11 @@ export default function Login(props) {
       alert("Post Registration Failed!");
     }
   }
-  
+
   useEffect(() => {
-    console.log('access : ', accessToken, 'refresh : ', refreshToken);
+    console.log("access : ", accessToken, "refresh : ", refreshToken);
   });
-  
+
   async function registration(event) {
     console.log(name, type, email, password2, role, genderValue, company);
     try {
@@ -153,21 +187,21 @@ export default function Login(props) {
     }
   }
   const genderValue = mapGenderToValue(selectedGender);
-  const changeRole = () => {
-    if (role === "r") {
-      setRole("c");
-      // setType("candidate");
-      console.log("type : ", type);
-    } else {
-      setRole("r");
-      // setType("recruiter");
-      console.log("type : ", type);
-    }
-  };
+  // const changeRole = () => {
+  //   if (role === "r") {
+  //     setRole("c");
+  //     // setType("candidate");
+  //     console.log("type : ", type);
+  //   } else {
+  //     setRole("r");
+  //     // setType("recruiter");
+  //     console.log("type : ", type);
+  //   }
+  // };
   if (authMode === "signin") {
     return (
       <div className="Auth-form-container">
-              <Toast ref={toast} />
+        <Toast ref={toast} />
 
         <form className="Auth-form">
           <div className="Auth-form-content">
@@ -196,15 +230,10 @@ export default function Login(props) {
                     setLogin(event.target.value);
                   }}
                 ></TextField>
-                <TextField
-                  variant="outlined"
-                  label="Password"
-                  id="password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                ></TextField>
+                <PasswordInput
+                  password={password}
+                  handlePassword={(e) => setPassword(e.target.value)}
+                />
               </Stack>
             </div>
             <div className="d-grid gap-2 mt-3">
@@ -269,6 +298,7 @@ export default function Login(props) {
               label="Name"
               id="name"
               value={name}
+              required={true}
               onChange={(event) => {
                 setName(event.target.value);
               }}
@@ -277,12 +307,13 @@ export default function Login(props) {
               variant="outlined"
               label="Email"
               id="email"
+              required={true}
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
             ></TextField>
-            <TextField
+            {/* <TextField
               variant="outlined"
               label="Password"
               id="password2"
@@ -290,7 +321,12 @@ export default function Login(props) {
               onChange={(event) => {
                 setPassword2(event.target.value);
               }}
-            ></TextField>
+            ></TextField> */}
+            <PasswordInput
+              password={password2}
+              required={true}
+              handlePassword={(e) => setPassword2(e.target.value)}
+            />
             <Dropdown
               value={selectedGender}
               onChange={(e) => setSelectedGender(e.value)}
@@ -316,12 +352,14 @@ export default function Login(props) {
                 </div>
                 <div className="col">
                   <InputSwitch
+                    // required={true}
                     onChange={(e) => {
                       setIsSwitchChecked(e.value);
                       // setRole("r");
                       isSwitchChecked
                         ? setType("candidate")
                         : setType("recruiter");
+                      type==='candidate'? setRole('c'):setRole('r');
                       console.log(type);
                       // changeRole();
                     }}
@@ -337,6 +375,7 @@ export default function Login(props) {
                   variant="outlined"
                   label="Company"
                   id="company"
+                  required={true}
                   value={company}
                   onChange={(event) => {
                     setComapny(event.target.value); // Typo corrected from setComapny to setCompany

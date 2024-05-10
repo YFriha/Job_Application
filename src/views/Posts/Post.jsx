@@ -546,11 +546,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect } from "react";
+import {refresh} from '../../refresh';
 // import yassir from '../assets/img/';
 import { useState } from "react";
 import React from "react";
 
 import { Message } from 'primereact/message';
+import { useNavigate } from "react-router-dom";
         
 // import ImageUploadButton from "./ImageUploadButton";
 // import { generateRandomPassword } from "./GenerateRandomPassword";
@@ -565,6 +567,8 @@ const PostPage = () => {
   const [postCompanyArray, setPostCompanyArray] = useState();
   const [arrayOfStrings, setArrayOfStrings] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [refreshToken, setRefreshToken] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   // const [DataArray, setDataArray] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
   const isTextFieldEmpty = (value) => {
@@ -576,7 +580,7 @@ const PostPage = () => {
   }
 ,[]
 );
-
+const navigate = useNavigate();
   async function Load() {
     // console.log('load !!!!!!!!!!!')
     // const result = await axios.get("http://localhost:8000/posts/list");
@@ -584,7 +588,20 @@ const PostPage = () => {
     // result.data.forEach((player, index) => {
     //   // console.log(`Player ${index + 1}: ${player.playerFname}`);
     // });
-    const response = await fetch(`${apiUrl}/posts/list/`);
+    const response = await fetch(`${apiUrl}/posts/list/`, {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+      },
+    });
+    console.log("response : ", response);
+    if (response.status === 401) {
+      console.log("Unauthorized. Redirecting to login page...");
+      navigate("/login");
+      // refresh(setRefreshToken, setAccessToken);
+      // Stop execution of the function after redirecting
+      return; // or throw new Error('Unauthorized'); depending on your requirement
+    };
     const json = await response.json();
     setPosts(json);
     setPostCompanyArray(json.company);

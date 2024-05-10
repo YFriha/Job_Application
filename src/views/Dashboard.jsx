@@ -27,6 +27,7 @@ import {
 } from "variables/charts.js";
 
 import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
 
@@ -163,7 +164,7 @@ function Dashboard() {
 
   const transformedGenderData = transformData(genderData);
   console.log("Data transformed ", transformedGenderData);
-
+const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       await LoadApplications();
@@ -173,8 +174,19 @@ function Dashboard() {
   }, []);
   const LoadApplications = async () => {
     const response = await fetch(
-      `${apiUrl}/recruiters/1/total_application_and_post/`
-    );
+      `${apiUrl}/recruiters/1/total_application_and_post/`, {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+      },
+    });
+    console.log("response : ", response);
+    if (response.status === 401) {
+      console.log("Unauthorized. Redirecting to login page...");
+      navigate("/login");
+      // Stop execution of the function after redirecting
+      return; // or throw new Error('Unauthorized'); depending on your requirement
+    };
     const json = await response.json();
     setPosts(json.total_posts);
     setApplicants(json.total_applications);
@@ -185,8 +197,19 @@ function Dashboard() {
   const LoadGenderChart = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/recruiters/1/candidates_by_gender_per_recruiter/`
-      );
+        `${apiUrl}/recruiters/1/candidates_by_gender_per_recruiter/`, {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+          },
+        });
+        console.log("response : ", response);
+        if (response.status === 401) {
+          console.log("Unauthorized. Redirecting to login page...");
+          navigate("/login");
+          // Stop execution of the function after redirecting
+          return; // or throw new Error('Unauthorized'); depending on your requirement
+        };
       const json = await response.json();
       console.log("gender data:", json);
       setGenderData(json);
@@ -216,8 +239,19 @@ function Dashboard() {
   const LoadPostsChart = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/recruiters/1/candidates_applied_to_RHposts/`
-      );
+        `${apiUrl}/recruiters/1/candidates_applied_to_RHposts/`, {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+          },
+        });
+        console.log("response : ", response);
+        if (response.status === 401) {
+          console.log("Unauthorized. Redirecting to login page...");
+          navigate("/login");
+          // Stop execution of the function after redirecting
+          return; // or throw new Error('Unauthorized'); depending on your requirement
+        };
       const json = await response.json();
       console.log("candidates_applied_to_RHposts :", json);
       setPostsData(json);

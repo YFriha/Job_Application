@@ -13,6 +13,7 @@ import './views/index.css'
 import Home from "views/client/Home";
 import PostDetails from "views/Posts/PostDetails";
 import InternDetails from "views/interns/InternshipDetails";
+import ForgotPassword from "views/Auth/ForgotPassword";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -22,6 +23,7 @@ root.render(
       <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
+      {/* <Route path="/reset_password" element={<ForgotPassword />} /> */}
       <Route path='/post/Postdetails/:postid/:imageSrc/:title/:description/:requirement?/:deadline/:company' element={<PostDetails />} />
       <Route path='/intern/Postdetails/:internid/:imageSrc/:title/:description/:requirement?/:deadline/:company' element={<InternDetails />} />
 

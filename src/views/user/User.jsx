@@ -15,6 +15,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function User() {
@@ -29,9 +30,23 @@ function User() {
   const [postalCode, setPostalCode] = useState("");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
+
+  const navigate = useNavigate();
   async function loadRecruiter() {
     try {
-      const response = await fetch(`${apiUrl}/recruiters/1/find/`);
+      const response = await fetch(`${apiUrl}/recruiters/1/find/`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+        },
+      });
+      console.log("response : ", response);
+      if (response.status === 401) {
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
+      };
       const json = await response.json();
       setRecruiter(json);
       console.log(json);

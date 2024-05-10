@@ -4,6 +4,7 @@ import ToggleSwitch from "components/ToggleSwitch/ToggleSwitch";
 // import KanbanCandidate from './KanbanCandidate'
 // import KanbanBoard from "./KanbanCandidate";
 import { ControlledBoard } from "./board";
+import { useNavigate } from "react-router-dom";
 
 function Tables() {
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
@@ -12,11 +13,25 @@ function Tables() {
     setIsSwitchChecked(isChecked);
   };
   const [data, setData] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const navigate = useNavigate();
   //===============================================================
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/candidates/list/");
+        const response = await fetch(`${apiUrl}candidates/list/`, {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+          },
+        });
+        console.log("response : ", response);
+        if (response.status === 401) {
+          console.log("Unauthorized. Redirecting to login page...");
+          navigate("/login");
+          // Stop execution of the function after redirecting
+          return; // or throw new Error('Unauthorized'); depending on your requirement
+        };
         const result = await response.json();
         console.log('Data is : ',result);
         setData(result);

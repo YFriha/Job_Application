@@ -371,7 +371,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import InternDetails from "./InternshipDetails";
 import Switcher from "./Switcher";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import  { useContext } from "react";
 
 const SwitcherContext = React.createContext();
@@ -493,7 +493,19 @@ export default function InternshippsDemo() {
   }, [code]);
   const LoadIntern = async (id) => {
     try {
-      const response = await fetch(`${apiUrl}ai/all_Internship_Interns/${id}/`);
+      const response = await fetch(`${apiUrl}ai/all_Internship_Interns/${id}/`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+        },
+      });
+      console.log("response : ", response);
+      if (response.status === 401) {
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
+      };
       const result = await response.json();
       console.log("Data is : ", result);
       setInterns(result);
@@ -529,7 +541,19 @@ export default function InternshippsDemo() {
   }
   const Scrapping = async () => {
     try {
-      const response = await fetch(`${apiUrl}ai/start_scraping/${id}/`);
+      const response = await fetch(`${apiUrl}ai/start_scraping/${id}/`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+        },
+      });
+      console.log("response : ", response);
+      if (response.status === 401) {
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
+      };
       const result = await response.json();
       console.log("after Scrapping : ", result);
       // setInterns(result);
@@ -642,17 +666,26 @@ export default function InternshippsDemo() {
       </IconField>
     </div>
   );
+  const navigate = useNavigate();
   async function Load() {
     try {
       const response = await fetch(`${apiUrl}ai/internship/`, {
         headers: {
           "Content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("access"), // Add a space after 'Bearer'
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
         },
       });
-
+      console.log("response : ", response);
       if (response.status === 401) {
-        Navigate("/login");
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
+      }
+
+      if (!response.ok) {
+        // Handle other types of errors (e.g., server errors)
+        throw new Error("Failed to fetch data. Status: " + response.status);
       }
 
       const json = await response.json();

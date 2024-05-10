@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Paper, Typography } from "@mui/material";
 import { Description } from "@mui/icons-material";
 import Sidebar from "components/Sidebar/Sidebar";
@@ -51,7 +51,7 @@ export default function PostDetails() {
   const { postid,imageSrc, title, description, requirement, deadline } =
     useParams();
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
-
+  const apiUrl = process.env.REACT_APP_API_URL;
   const mainPanel = React.useRef();
   var ps;
   const handleSwitchChange = (isChecked) => {
@@ -81,10 +81,22 @@ export default function PostDetails() {
   //   return job.startsWith(filterLower);
   // });
   // console.log(filteredCards);
-
+const navigate = useNavigate();
   async function Load() {
     console.log("postId : ",postid);
-    const response = await fetch(`http://127.0.0.1:8000/posts/${postid}/findCandidate/`);
+    const response = await fetch(`${apiUrl}posts/${postid}/findCandidate/`, {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+      },
+    });
+    console.log("response : ", response);
+    if (response.status === 401) {
+      console.log("Unauthorized. Redirecting to login page...");
+      navigate("/login");
+      // Stop execution of the function after redirecting
+      return; // or throw new Error('Unauthorized'); depending on your requirement
+    };
     const json = await response.json();
     setData(json);
     // setFiltredCand(json)
