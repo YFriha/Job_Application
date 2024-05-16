@@ -366,12 +366,19 @@ import {
   TextField,
   Typography,
   useTheme,
+  Box,
 } from "@mui/material";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import InternDetails from "./InternshipDetails";
 import Switcher from "./Switcher";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useNavigate } from "react-router-dom";
+import { ProgressBar } from "primereact/progressbar";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { FloatLabel } from "primereact/floatlabel";
+import { InputTextarea } from "primereact/inputtextarea";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 // import  { useContext } from "react";
 
 const SwitcherContext = React.createContext();
@@ -396,6 +403,8 @@ export default function InternshippsDemo() {
   const [internDetails, setInternDetails] = useState(false);
   const [isScrappingLaunched, setIsScrappingLaunched] = useState(false);
   const [code, setCode] = useState("");
+  const [rowEmail, setRowEmail] = useState("");
+  const [emailForSending, setEmailForSending] = useState("");
 
   // const switcher = useContext(SwitcherContext);
   const [switcherValue, setSwitcherValue] = useState(true);
@@ -493,19 +502,22 @@ export default function InternshippsDemo() {
   }, [code]);
   const LoadIntern = async (id) => {
     try {
-      const response = await fetch(`${apiUrl}ai/all_Internship_Interns/${id}/`, {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
-        },
-      });
+      const response = await fetch(
+        `${apiUrl}ai/all_Internship_Interns/${id}/`,
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+          },
+        }
+      );
       console.log("response : ", response);
       if (response.status === 401) {
         console.log("Unauthorized. Redirecting to login page...");
         navigate("/login");
         // Stop execution of the function after redirecting
         return; // or throw new Error('Unauthorized'); depending on your requirement
-      };
+      }
       const result = await response.json();
       console.log("Data is : ", result);
       setInterns(result);
@@ -553,7 +565,7 @@ export default function InternshippsDemo() {
         navigate("/login");
         // Stop execution of the function after redirecting
         return; // or throw new Error('Unauthorized'); depending on your requirement
-      };
+      }
       const result = await response.json();
       console.log("after Scrapping : ", result);
       // setInterns(result);
@@ -715,6 +727,113 @@ export default function InternshippsDemo() {
         `Error deleting internship with ID ${internshipId}: ${error.message}`
       );
     }
+  };
+  const [visible1, setVisible1] = useState(false);
+  const [position, setPosition] = useState("right");
+  const [subject, setSubject] = useState("");
+  const show = () => {
+    setPosition("right");
+    setVisible1(true);
+  };
+  //   function MyDialog() {
+
+  //     const footerContent = (
+  //         <div>
+  //             <Button label="No" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
+  //             <Button label="Yes" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
+  //         </div>
+  //     );
+
+  //     return (
+  //         <div className="card">
+  //             <div className="flex flex-wrap justify-content-center gap-2 mb-2">
+  //                 <Button label="Left" icon="pi pi-arrow-right" onClick={() => show('left')} className="p-button-help" style={{ minWidth: '10rem' }} />
+  //                 <Button label="Right" icon="pi pi-arrow-left" onClick={() => show('right')} className="p-button-help" style={{ minWidth: '10rem' }} />
+  //             </div>
+  //             <div className="flex flex-wrap justify-content-center gap-2 mb-2">
+  //                 <Button label="TopLeft" icon="pi pi-arrow-down-right" onClick={() => show('top-left')} className="p-button-warning" style={{ minWidth: '10rem' }} />
+  //                 <Button label="Top" icon="pi pi-arrow-down" onClick={() => show('top')} className="p-button-warning" style={{ minWidth: '10rem' }} />
+  //                 <Button label="TopRight" icon="pi pi-arrow-down-left" onClick={() => show('top-right')} className="p-button-warning" style={{ minWidth: '10rem' }} />
+  //             </div>
+  //             <div className="flex flex-wrap justify-content-center gap-2">
+  //                 <Button label="BottomLeft" icon="pi pi-arrow-up-right" onClick={() => show('bottom-left')} className="p-button-success" style={{ minWidth: '10rem' }} />
+  //                 <Button label="Bottom" icon="pi pi-arrow-up" onClick={() => show('bottom')} className="p-button-success" style={{ minWidth: '10rem' }} />
+  //                 <Button label="BottomRight" icon="pi pi-arrow-up-left" onClick={() => show('bottom-right')} className="p-button-success" style={{ minWidth: '10rem' }} />
+  //             </div>
+
+  //             <Dialog header="Header" visible={visible} position={position} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent} draggable={false} resizable={false}>
+  //                 <p className="m-0">
+  //                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  //                     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  //                     consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+  //                     Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  //                 </p>
+  //             </Dialog>
+  //         </div>
+  //     )
+  // }
+  // const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState("");
+  const [recipient, setRecipient] = useState("");
+  const [myMail, setMyMail] = useState("");
+  const [status, setStatus] = useState("");
+  const sendMessage = async (subject, email) => {
+    try {
+      const response = await fetch(`${apiUrl}ai/send-email/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject:subject,
+          message:emailForSending,
+          recipient:email,
+          // myMail,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setStatus("Email sent successfully");
+      } else {
+        setStatus(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      setStatus(`Error: ${error.toString()}`);
+    }
+  };
+  // const [rowEmail, setRowEmail]=useState('');
+  const openDialog = (row_email) => {
+    console.log("open Dialog ==> ", row_email);
+
+    setRowEmail(row_email.email);
+    setInternDetails(false);
+    setEmailForSending(`
+    Subject: Congratulations! You've Been Accepted for an Internship Opportunity
+    
+    Dear ${row_email.name},
+    
+    I hope this email finds you well.
+    
+    We are delighted to inform you that after careful consideration of your application, you have been selected to join our team as an intern. Congratulations on being accepted for the internship opportunity .
+    
+    Your enthusiasm, qualifications, and passion for ${row_email.subject} stood out among the many applicants we received. We believe that your skills and experiences will greatly contribute to our team and that you will benefit immensely from the learning opportunities provided during your internship.
+    
+    Here are a few details about your internship:
+    - Internship Position: [Position Title]
+    - Start Date: [Start Date]
+    - Duration: [Duration of Internship]
+    - Location: [Office Location or Remote]
+    
+    Before your start date, we will send you more information about your role, responsibilities, and the onboarding process. In the meantime, please feel free to reach out if you have any questions or require further clarification.
+    
+    We are excited to welcome you to our team and look forward to working together. Congratulations once again, and we wish you a fulfilling and enriching experience as an intern .
+    
+    Best regards,
+    `);
+    // handleClose()
+    setSubject(`${row_email.subject}`);
+    sendMessage(row_email.subject, row_email.email);
+    setVisible1(true);
   };
   return (
     <div className="content">
@@ -910,8 +1029,8 @@ export default function InternshippsDemo() {
       <Dialog
         open={internDetails}
         onClose={handleClose}
-        // maxWidth="md"
-        // fullWidth
+        maxWidth="md"
+        fullWidth
       >
         <DialogTitle>details</DialogTitle>
         <DialogContent>
@@ -936,13 +1055,28 @@ export default function InternshippsDemo() {
             aria-label="delete"
           >
             <RefreshIcon />
+            {/* <ProgressBar mode="indeterminate" style={{ height: '6px' }}></ProgressBar> */}
           </IconButton>
-          {isScrappingLaunched && (
-            <Typography>Verification Code : {code}</Typography>
-          )}
+          {
+            isScrappingLaunched && (
+              <Typography>Verification Code : {code}</Typography>
+            )
+            //  && (
+            //   <ProgressSpinner
+            //     style={{ width: "50px", height: "50px" }}
+            //     strokeWidth="8"
+            //     fill="var(--surface-ground)"
+            //     animationDuration="1s"
+            //   />
+            // )
+          }
 
           <div className="content">
-            <DataInternsTable intern={interns} />
+            <DataInternsTable
+              intern={interns}
+              openDialog={openDialog}
+              rowEmail={rowEmail}
+            />
           </div>
         </DialogContent>
         <DialogActions>
@@ -963,6 +1097,84 @@ export default function InternshippsDemo() {
           {/* <Button onClick={deleteInternshipp} color="primary">
             Delete
           </Button> */}
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={visible1}
+        onClose={handleClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          style: {
+            width: "50vw",
+            position: "absolute",
+            right: 0, // Adjust this value as needed
+          },
+        }}
+        // draggable={false}
+        // resizable={false}
+      >
+        <DialogTitle>Send Message</DialogTitle>
+        <DialogContent>
+          <Typography
+            fontSize={14}
+            fontFamily={"sans-serif"}
+            sx={{
+              paddingBottom: "10px",
+            }}
+            // color={theme.palette.mode === "dark" ? "#009688" : "#9cd6d1"}
+          >
+            Email : {rowEmail}
+          </Typography>
+          <TextField
+            variant="outlined"
+            label="Subject"
+            id="subject"
+            value={subject}
+            onChange={(event) => {
+              setSubject(event.target.value);
+            }}
+          ></TextField>
+          {/* <Box flexGrow={9} borderRadius={8}></Box> */}
+          <InputTextarea
+            value={emailForSending}
+            onChange={(e) => setEmailForSending(e.target.value)}
+            rows={5}
+            cols={80}
+            style={{ resize: "none" }}
+          />
+        </DialogContent>
+
+        <DialogActions>
+          {/* <Button onClick={sendMessage} color="primary">
+            send
+          </Button> */}
+
+          <Button
+            variant="contained"
+            onClick={() => {
+              setVisible1(false);
+              setInternDetails(true);
+            }}
+            sx={{
+              bgcolor: theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
+              ":hover": {
+                bgcolor: theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <IconButton
+            sx={{
+              color: "#9f9f9f",
+            }}
+            onClick={sendMessage}
+            color="inherit"
+            aria-label="delete"
+          >
+            <SendRoundedIcon />
+          </IconButton>
         </DialogActions>
       </Dialog>
     </div>

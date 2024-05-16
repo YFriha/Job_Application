@@ -1,5 +1,5 @@
 import Calendar from "views/Calendar/Calendar";
-import Chat from "views/Chat";
+import Chat from "views/Chat/Chat";
 import Dashboard from "views/Dashboard.jsx";
 import TableList from "views/Candidates/Tables.jsx";
 import UserPage from "views/user/User.jsx";
