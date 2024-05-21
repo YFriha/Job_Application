@@ -36,10 +36,16 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Button, CardActionArea, CardActions } from "@mui/material";
 import "./home.css";
+import pulseLogo from 'assets/img/PULSE-digital-logo.png'; // Adjust the path according to your project structure
 import {useState, useEffect} from 'react';
-export default function MyCard(props, title, subtitle, text) {
+import { useNavigate } from "react-router-dom";
+export default function MyCard(props, title, description, requirements, localisation, mode, deadline, image) {
   console.log(props.image);
   const [isFixed, setIsFixed] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
+  const handleApplyClick = () => {
+    navigate("/login");
+  };
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 240) {
@@ -55,21 +61,17 @@ export default function MyCard(props, title, subtitle, text) {
     };
   }, []);
   return (
-    <div className={`fixed-component ${isFixed ? "fixed" : ""}`}>
+    <div className={`fixed-component ${isFixed ? "fixed" : "fixed2"}`}>
       <Card
-        // sx={{
-        //   maxWidth: 500,
-        //   marginBottom: 5,
-        //   border: "1px solid #9cd6d1",
-        //   borderRadius: "15px",
-        //   height: '500px'
-        // }}
+        
+  
       >
-        <CardActionArea>
+        <CardActionArea  >
           <CardMedia
             component="img"
-            height="140"
-            image={props.image}
+            height="80"
+            width="250"
+            image={pulseLogo}
             alt="Job Post Image"
           />
           <CardContent>
@@ -77,7 +79,19 @@ export default function MyCard(props, title, subtitle, text) {
               {props.title}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {props.text}
+              {props.description}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {props.requirements}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {props.localisation}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {props.mode}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {props.deadline}
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -87,6 +101,9 @@ export default function MyCard(props, title, subtitle, text) {
           Share
         </Button>
       </CardActions> */}
+      <div className="d-grid gap-2 ">
+        <button class="btn btn-primary" type="button" onClickCapture={handleApplyClick} >Apply</button>
+      </div>
       </Card>
     </div>
   );

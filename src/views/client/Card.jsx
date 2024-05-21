@@ -36,15 +36,17 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 import './home.css';
-export default function MyCard(props,title, subtitle,text) {
+import pulseLogo from 'assets/img/PULSE-digital-logo.png'; // Adjust the path according to your project structure
+export default function MyCard(props,title, deadline,description) {
   console.log(props.image)
   return (
-    <Card sx={{ maxWidth: 500,height: 400 , marginBottom: 5, border: '1px solid #9cd6d1', borderRadius: '8px',     }}>
+    <Card sx={{ maxWidth: 500,height: 200 , marginBottom: 5, border: '1px solid #9cd6d1', borderRadius: '8px',     }}>
       <CardActionArea>
         <CardMedia
           component="img"
-          height="140"
-          image={props.image}
+          height="80"
+          width="250"
+          image={pulseLogo}
           alt="Job Post Image"
         />
         <CardContent>
@@ -52,7 +54,10 @@ export default function MyCard(props,title, subtitle,text) {
             {props.title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {props.text}
+            {props.description}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {props.deadline}
           </Typography>
         </CardContent>
       </CardActionArea>

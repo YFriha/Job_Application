@@ -10,11 +10,11 @@ const DataInternsTable = ({ intern, openDialog, rowEmail }) => {
       { Header: "ID", accessor: "id" },
       { Header: "Name", accessor: "name" },
       { Header: "Email", accessor: "email" },
-      //   { Header: "Phone", accessor: "email" },
-      { Header: "Skills", accessor: "skills" },
-      //   { Header: "Step", accessor: "step" },
+      { Header: "Phone", accessor: "phone" },
+      { Header: "Profil", accessor: "profil" },
+      { Header: "Resume", accessor: "reference" },
       { Header: "Subject", accessor: "subject" },
-      { Header: "Resume", accessor: "resume" },
+
     ],
     []
   );

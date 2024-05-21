@@ -497,17 +497,12 @@
 // }
 import React, { useEffect, useState, useRef } from "react";
 import "./login.css";
-import { FaGoogle, FaFacebook } from "react-icons/fa"; // Import Google and Facebook icons
+import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa"; // Import Google and Facebook icons
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Toast } from "primereact/toast";
-import ToggleButton from "components/ToggleButton/ToggleButton";
 import {
-  Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
   Stack,
   TextField,
   Typography,
@@ -517,6 +512,8 @@ import { InputSwitch } from "primereact/inputswitch";
 import { Dropdown } from "primereact/dropdown";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../../Redux/actions"; // Import your action
 
 const PasswordInput = ({ password, handlePassword, required }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -549,9 +546,8 @@ const PasswordInput = ({ password, handlePassword, required }) => {
   );
 };
 
-export default function Login(props) {
+const Login = (props) => {
   const [authMode, setAuthMode] = useState("signin");
-  const [isChecked, setIsChecked] = useState(true);
   const theme = useTheme();
   const [login, setLogin] = useState("");
   const [role, setRole] = useState("c");
@@ -565,8 +561,6 @@ export default function Login(props) {
   const [isSwitchChecked, setIsSwitchChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const toast = useRef(null);
-  const [accessToken, setAccessToken] = useState("");
-  const [refreshToken, setRefreshToken] = useState("");
 
   const gender = [{ name: "Male" }, { name: "Female" }];
 
@@ -619,10 +613,16 @@ export default function Login(props) {
         password: password,
       });
       console.log(response.data);
-      setRefreshToken(response.data.refresh_token);
-      setAccessToken(response.data.access_token);
       localStorage.setItem("accessToken", response.data.access_token);
       localStorage.setItem("refreshToken", response.data.refresh_token);
+
+      const userId = getUserIdFromAccessToken();
+      if (userId) {
+        console.log("User ID:", userId);
+        props.setUserId(userId); // Store userId in Redux
+      } else {
+        console.log("User ID not found or failed to decode token");
+      }
 
       redirectToDashboard();
       setLogin("");
@@ -644,12 +644,6 @@ export default function Login(props) {
       console.log(apiUrl);
       window.location.href =
         "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78q7n8oilzgi18&redirect_uri=http://localhost:3000/login&state=1234&scope=openid%20email%20profile";
-
-      if (window.location.href.includes("code=")) {
-        console.log("it contains the code in url ");
-      } else {
-        console.log("it does not contain the code in url ");
-      }
     } catch (error) {
       console.error("Error redirecting to LinkedIn authentication:", error);
     }
@@ -665,17 +659,60 @@ export default function Login(props) {
         client_id: "78q7n8oilzgi18",
         client_secret: "WPL_AP0.khyYEipcPsAtKLM1.NzU5ODc1NDU1",
       };
-      const response = await axios.get(`
-        ${apiUrl}authentication/linkedin-callback/`,
+      const response = await axios.get(
+        `${apiUrl}authentication/linkedin-callback/`,
         { params: params }
       );
       console.log("params : ", params);
       const result = response.data;
       console.log(result);
+      localStorage.setItem("accessToken", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token);
+      const userId = getUserIdFromAccessToken();
+      if (userId) {
+        console.log("User ID:", userId);
+        props.setUserId(userId); // Store userId in Redux
+      } else {
+        console.log("User ID not found or failed to decode token");
+      }
+      redirectToDashboard();
     } catch (error) {
       console.error("Error fetching data from callback:", error);
     }
   };
+
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
+
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log('payload : ', jsonPayload)
+
+    return JSON.parse(jsonPayload);
+  }
 
   const redirectToDashboard = () => {
     navigate("/admin/dashboard");
@@ -708,7 +745,7 @@ export default function Login(props) {
         life: 3000,
       });
     } catch (err) {
-      alert("post Registation Failed");
+      alert("post Registration Failed");
     }
   };
 
@@ -810,12 +847,10 @@ export default function Login(props) {
                         fontSize={18}
                         fontFamily={"sans-serif"}
                         color={
-                          theme.palette.mode === "dark"
-                            ? "#009688"
-                            : "#9cd6d1"
+                          theme.palette.mode === "dark" ? "#009688" : "#9cd6d1"
                         }
                       >
-                        Are you recruter ?
+                        Are you a recruiter?
                       </Typography>
                     </div>
                     <div className="col">
@@ -832,7 +867,7 @@ export default function Login(props) {
                     </div>
                   </div>
                 </Stack>
-                {isSwitchChecked ? (
+                {isSwitchChecked && (
                   <>
                     <TextField
                       variant="outlined"
@@ -845,8 +880,6 @@ export default function Login(props) {
                       }}
                     ></TextField>
                   </>
-                ) : (
-                  ""
                 )}
               </>
             )}
@@ -856,8 +889,7 @@ export default function Login(props) {
               color="primary"
               variant="contained"
               sx={{
-                bgcolor:
-                  theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
+                bgcolor: theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
                 ":hover": {
                   bgcolor:
                     theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
@@ -870,7 +902,7 @@ export default function Login(props) {
           </div>
           {authMode === "signin" && (
             <>
-              <Button
+              {/* <Button
                 color="primary"
                 variant="contained"
                 sx={{
@@ -883,18 +915,22 @@ export default function Login(props) {
                 }}
                 onClick={linkedinAuth}
               >
-                linkedin
-              </Button>
+                LinkedIn
+              </Button> */}
               <div className="d-flex justify-content-center mt-3">
-                <button
-                  className="btn googleBtn  me-2"
-                  onClick={linkedinAuth}
-                >
+                <button className="btn googleBtn  me-2">
                   <FaGoogle /> Sign in with Google
                 </button>
-                <button className="btn fbBtn">
-                  <FaFacebook /> Sign in with Facebook
-                </button>
+                <Button className="btn fbBtn" onClick={linkedinAuth} color="primary"
+              variant="contained"
+              sx={{
+                bgcolor:  "#0762C8" ,
+                ":hover": {
+                  bgcolor: "#0762C7",
+                },
+              }}>
+                  <FaLinkedin /> Sign in with LinkedIn
+                </Button>
               </div>
             </>
           )}
@@ -908,4 +944,14 @@ export default function Login(props) {
       </form>
     </div>
   );
-}
+};
+
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
+
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

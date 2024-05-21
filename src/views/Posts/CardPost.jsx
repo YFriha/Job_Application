@@ -16,12 +16,10 @@ import {
 } from "@mui/material";
 import { CreateOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
-// import ImageUploadButton from "./ImageUploadButton";
-// import PropTypes from 'prop-types';
-// import axios from "axios";
-import axios from "axios";
 import AlertDialogSlide from "../../components/Dialog/AlertDialogSlide";
 
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../../Redux/actions"; // Import your action
 function CardPost({
   postid,
   imageSrc,
@@ -53,7 +51,8 @@ function CardPost({
   const [postRequirement, setPostRequirement] = useState(requirement);
   const [postDeadline, setPostDeadline] = useState(deadline);
   const [postCompany, setPostValue] = useState(company);
-  const [selectedImage, setSelectedImage] = useState(imageSrc);
+
+  const userId = getUserIdFromAccessToken();
   useEffect(() => {
     // requirement.forEach((req, index) => {
     console.log("this is the req :: ", imageSrc);
@@ -64,7 +63,7 @@ function CardPost({
     console.log("the post id for deleting is : " + postid);
     const updatedPostData = {
       postid: postid,
-      recruiter: "1",
+      recruiter: userId,
       image: imageSrc,
       title: postTitle,
       description: postDescription,
@@ -75,28 +74,6 @@ function CardPost({
     console.log("test 1", updatedPostData);
     updatePost(updatedPostData);
   }
-  // async function updatePost(updatedData) {
-  //   console.log("test 2", updatedData);
-  //   try {
-  //     const response = await axios.put(
-  //       `http://127.0.0.1:8000/posts/${postid}/update/`,
-  //       updatedData
-  //     );
-  //     if (response.status === 200) {
-  //       // Handle a successful update (e.g., show a success message)
-  //       console.log(`Post with ID has been updated.`);
-  //       // Reload the post data if needed
-  //       // Load();
-  //     } else {
-  //       // Handle errors (e.g., show an error message)
-  //       console.error(`Error updating post with ID : ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     // Handle any network errors or exceptions
-  //     console.error(`Error updating post: ${error.message}`);
-  //   }
-  // }
-
   const theme = useTheme();
   const [open4, openchange4] = useState(false);
 
@@ -106,6 +83,40 @@ function CardPost({
   const closepopup4 = () => {
     openchange4(false);
   };
+
+
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
+
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log("payload : ", jsonPayload);
+
+    return JSON.parse(jsonPayload);
+  }
   return (
     <div className="card">
       <img src={imageSrc} alt={title} className="card-image img-responsive" />
@@ -284,5 +295,12 @@ CardPost.propTypes = {
   handleImageUpload: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
 };
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
 
-export default CardPost;
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CardPost);

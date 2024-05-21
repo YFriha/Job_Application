@@ -381,9 +381,13 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 // import  { useContext } from "react";
 
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../../Redux/actions"; // Import your action
+
+
 const SwitcherContext = React.createContext();
 
-export default function InternshippsDemo() {
+const InternshippsDemo=()=> {
   const theme = useTheme();
   const [internship, setInternship] = useState([]);
   const [deleteInternshipDialog, setDeleteInternshipDialog] = useState(false);
@@ -395,7 +399,7 @@ export default function InternshippsDemo() {
   const dt = useRef(null);
   const [open, openchange] = useState(false);
   const [visible] = React.useState(true);
-
+  const [state, statechange] = useState(false);
   const [internshipSubject, setInternshipSubject] = useState("");
   const [email, setEmail] = useState("");
   const [internshipDeadline, setInternshipDeadline] = useState("");
@@ -408,6 +412,7 @@ export default function InternshippsDemo() {
 
   // const switcher = useContext(SwitcherContext);
   const [switcherValue, setSwitcherValue] = useState(true);
+  const userId = getUserIdFromAccessToken();
 
   const functionopenpopup = () => {
     console.log("functionopenpopup");
@@ -420,6 +425,7 @@ export default function InternshippsDemo() {
 
   useEffect(() => {
     Load();
+    console.log('user id is : ',userId)
   }, []);
 
   const handleClose = () => {
@@ -497,11 +503,46 @@ export default function InternshippsDemo() {
   //   }
   // }
 
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
+
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log('payload : ', jsonPayload)
+
+    return JSON.parse(jsonPayload);
+  }
+
+
   useEffect(() => {
     console.log("verif Code is ", code);
   }, [code]);
   const LoadIntern = async (id) => {
     try {
+      console.log('id is : ',id)
       const response = await fetch(
         `${apiUrl}ai/all_Internship_Interns/${id}/`,
         {
@@ -532,7 +573,7 @@ export default function InternshippsDemo() {
         email: email,
         location: internshipLocation,
         deadline: internshipDeadline,
-        recruiter: "1",
+        recruiter: userId,
       });
       // alert("Post Registation Successfully");
       setInternshipSubject("");
@@ -568,6 +609,8 @@ export default function InternshippsDemo() {
       }
       const result = await response.json();
       console.log("after Scrapping : ", result);
+      setIsScrappingLaunched(false)
+      statechange(false)
       // setInterns(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -681,7 +724,7 @@ export default function InternshippsDemo() {
   const navigate = useNavigate();
   async function Load() {
     try {
-      const response = await fetch(`${apiUrl}ai/internship/`, {
+      const response = await fetch(`${apiUrl}ai/internships_by_recruiter/${userId}/`, {
         headers: {
           "Content-type": "application/json",
           Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
@@ -1032,45 +1075,50 @@ export default function InternshippsDemo() {
         maxWidth="md"
         fullWidth
       >
+       <div class="row d-flex align-items-center">
+            <div class="col-md-6">
         <DialogTitle>details</DialogTitle>
+            </div>
+            <div class="col-md-6 text-right mr-2">
+            {state ? (
+                <div className="d-flex align-items-center justify-content-end">
+                    <strong>Scrapping...</strong>
+                    <div className="spinner-border text-success" role="status">
+                        <span className="sr-only">Scrapping...</span>
+                    </div>
+                </div>
+            ) : null}
+            </div>
+        </div>
+        
         <DialogContent>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <IconButton
             sx={{
               color: "#009688",
             }}
             onClick={() => {
+                  statechange(true);
               Scrapping();
               console.log(interns);
             }}
             onMouseUp={() => {
               setTimeout(() => {
-                // After the second scraping function completes, execute code_outlook
-
                 code_outlook();
-                // console.log('==>>',code);
                 setIsScrappingLaunched(true);
               }, 3000);
             }}
             color="inherit"
             aria-label="delete"
           >
-            <RefreshIcon />
-            {/* <ProgressBar mode="indeterminate" style={{ height: '6px' }}></ProgressBar> */}
+              <RefreshIcon />
           </IconButton>
-          {
-            isScrappingLaunched && (
-              <Typography>Verification Code : {code}</Typography>
-            )
-            //  && (
-            //   <ProgressSpinner
-            //     style={{ width: "50px", height: "50px" }}
-            //     strokeWidth="8"
-            //     fill="var(--surface-ground)"
-            //     animationDuration="1s"
-            //   />
-            // )
-          }
-
+          <div style={{ marginLeft: '10px' }}>
+              {isScrappingLaunched && (
+                  <Typography>Verification Code: {code}</Typography>
+              )}
+          </div>
+      </div>
           <div className="content">
             <DataInternsTable
               intern={interns}
@@ -1180,3 +1228,13 @@ export default function InternshippsDemo() {
     </div>
   );
 }
+
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
+
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(InternshippsDemo);

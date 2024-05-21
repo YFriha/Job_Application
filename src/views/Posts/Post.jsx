@@ -529,10 +529,11 @@
 //
 //==============================================================================================================
 import ImageUploadButton from "../ImageUploadButton";
-import Alert from "@mui/material/Alert";
 import axios from "axios";
 import CardPost from "./CardPost";
 import MyArrayInput from "../MyArrayInput";
+import InputMask from "react-input-mask";
+
 // import selectedImage from "./ImageUploadButton";
 import {
   Box,
@@ -546,13 +547,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect } from "react";
-import {refresh} from '../../refresh';
+import { refresh } from "../../refresh";
 // import yassir from '../assets/img/';
 import { useState } from "react";
 import React from "react";
 
-import { Message } from 'primereact/message';
+import { Message } from "primereact/message";
 import { useNavigate } from "react-router-dom";
+
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../../Redux/actions"; // Import your action
         
 // import ImageUploadButton from "./ImageUploadButton";
 // import { generateRandomPassword } from "./GenerateRandomPassword";
@@ -567,28 +571,22 @@ const PostPage = () => {
   const [postCompanyArray, setPostCompanyArray] = useState();
   const [arrayOfStrings, setArrayOfStrings] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [refreshToken, setRefreshToken] = useState('');
-  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState("");
+  const [accessToken, setAccessToken] = useState("");
   // const [DataArray, setDataArray] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
   const isTextFieldEmpty = (value) => {
     return value === "";
   };
 
+  
+  const userId = getUserIdFromAccessToken();
   useEffect(() => {
     (async () => await Load())();
-  }
-,[]
-);
+  }, []);
 const navigate = useNavigate();
   async function Load() {
-    // console.log('load !!!!!!!!!!!')
-    // const result = await axios.get("http://localhost:8000/posts/list");
-    // console.log("those are my posts : "+result.data);
-    // result.data.forEach((player, index) => {
-    //   // console.log(`Player ${index + 1}: ${player.playerFname}`);
-    // });
-    const response = await fetch(`${apiUrl}/posts/list/`, {
+    const response = await fetch(`${apiUrl}/posts/list/${userId}/`, {
       headers: {
         "Content-type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
@@ -598,46 +596,30 @@ const navigate = useNavigate();
     if (response.status === 401) {
       console.log("Unauthorized. Redirecting to login page...");
       navigate("/login");
-      // refresh(setRefreshToken, setAccessToken);
-      // Stop execution of the function after redirecting
       return; // or throw new Error('Unauthorized'); depending on your requirement
-    };
+    }
     const json = await response.json();
     setPosts(json);
     setPostCompanyArray(json.company);
-    // console.log(posts)
-    // setDataArray(json)
     return json;
   }
-
-  // const randomPassword = "generateRandomPassword(12)";
   async function save(event) {
-    // setPostImage(selectedImage)
-    toggleDialog3();console.log(arrayOfStrings);
-    // console.log("this is the url : " + postTitle, postDescription, arrayOfStrings,postDeadline, postCompany);
-    // event.preventDefault();
+    toggleDialog3();
+    if(postDeadline.trim() === ''){
+      isEmpty = true;
+    }
+    
+    console.log(arrayOfStrings);
     try {
-      
+      console.log("the user id is : ", userId);
       await axios.post(`${apiUrl}posts/create/`, {
-        // postTitle:,
-        // postPassword: randomPassword,
-        // postImage: selectedImage,
-        // postId:id,
-        // imageSrc: postImage,
-        
         image: postImage,
         title: postTitle,
         description: postDescription,
         requirements: arrayOfStrings,
         deadline: postDeadline,
-        // company: 'pulse',
-        recruiter:'1'
+        recruiter: userId,
       });
-      // <Alert variant="filled" severity="success">
-      //   Post Registation Successfully.
-      // </Alert>;
-      // <Message severity="info" text="Info Message" />
-
       alert("Post Registation Successfully");
       setPostTitle("");
       setPostDescription("");
@@ -653,9 +635,9 @@ const navigate = useNavigate();
   }
   const handleImageUpload = (postImage) => {
     setPostImage(postImage);
-    console.log(postImage)
+    console.log(postImage);
   };
-  const deletePostById=async (postId) =>{
+  const deletePostById = async (postId) => {
     try {
       // Send a DELETE request to the API endpoint with the post's ID
       await axios.delete(`${apiUrl}/posts/${postId}/delete/`);
@@ -667,7 +649,7 @@ const navigate = useNavigate();
       // Handle any errors that occur during the deletion process
       console.error(`Error deleting post with ID ${postId}: ${error.message}`);
     }
-  }
+  };
 
   // async function updatePost(updatedData) {
   //   console.log("voila le nom du post updated : " + updatedData.postTitle);
@@ -764,35 +746,40 @@ const navigate = useNavigate();
     return job.startsWith(filterLower);
   });
   console.log(filteredCards);
-  const fakeDataArray = [
-    {
-      postId: 1,
-      imageSrc: "/src/assets/img/work.jpg",
-      title: "Sample Post Title 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      requirement: [
-        "Bachelor's degree in Computer Science or related field",
-        "Experience with JavaScript and React.js",
-        "Strong problem-solving skills",
-      ],
-      deadline: "2024-04-29",
-      company: "Sample Company",
-    },
-    {
-      postId: 2,
-      imageSrc: "/src/assets/img/pulse.png",
-      title: "Sample Post Title 2",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      requirement: [
-        "Bachelor's degree in Computer Science or related field",
-        "Experience with JavaScript and React.js",
-        "Strong problem-solving skills",
-      ],
-      deadline: "2024-04-30",
-      company: "Sample Company",
-    },
-    // Add more objects as needed
-  ];
+
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
+
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log("payload : ", jsonPayload);
+
+    return JSON.parse(jsonPayload);
+  }
+  const isEmpty = false;
   return (
     <div
       style={{
@@ -860,7 +847,7 @@ const navigate = useNavigate();
                   value={arrayOfStrings}
                   onChange={setArrayOfStrings}
                 />
-                <TextField
+                {/* <TextField
                   variant="outlined"
                   label="Deadline"
                   id="postDeadline"
@@ -868,36 +855,29 @@ const navigate = useNavigate();
                   onChange={(event) => {
                     setPostDeadline(event.target.value);
                   }}
-                ></TextField>
-                {/* <TextField
-                  // noValidate
-                  variant="outlined"
-                  label="Company"
-                  id="postCompany"
-                  value={postCompany}
-                  onChange={(event) => {
-                    setPostCompany(event.target.value);
-                  }}
                 ></TextField> */}
-                {/* <TextField variant="outlined" label="Weight"></TextField> */}
+                <InputMask
+                  mask="9999-99-99"
+                  value={postDeadline}
+                  onChange={(event) => {
+                    setPostDeadline(event.target.value);
+                  }}
+                  maskChar=" "
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                      variant="outlined"
+                      label="Deadline"
+                      id="postDeadline"
+                      fullWidth
+                      error={isEmpty}
+                      helperText={isEmpty ? "This field is required" : ""}
+                    />
+                  )}
+                </InputMask>
               </Stack>
               <Stack direction="row" alignItems="center" spacing={2}>
-                {/* <Button
-                    variant="contained"
-                    component="label"
-                    sx={{
-                      bgcolor:
-                        theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
-                      ":hover": {
-                        bgcolor:
-                          theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
-                      },
-                    }}
-                  >
-                    Upload
-              TextField
-              variant="standard"  accept="image/*"  type="file" />
-                  </Button> */}
                 <ImageUploadButton onImageUpload={handleImageUpload} />
               </Stack>
             </DialogContent>
@@ -921,12 +901,15 @@ const navigate = useNavigate();
                     postDeadline,
                     postCompany
                   );
-                  if ((postTitle==='' || arrayOfStrings.length===0 || arrayOfStrings.some(item => item === ''))){
-                    <Message severity="error" text="Error Message" />
+                  if (
+                    postTitle === "" ||
+                    arrayOfStrings.length === 0 ||
+                    arrayOfStrings.some((item) => item === "")
+                  ) {
+                    <Message severity="error" text="Error Message" />;
                     window.alert("Veillez remplir les champs obligatoires!");
                   } else {
-                    save()
-                    
+                    save();
                   }
                 }}
               >
@@ -1065,10 +1048,8 @@ const navigate = useNavigate();
           </Stack>
         </Stack>
         <div className="app">
-          {filteredCards.map(
-            (post) => (
+          {filteredCards.map((post) => (
               // console.log("requirements :  ", post.image),
-              (
                 <div className="my-food" key={post.postId}>
                   <CardPost
                     postid={post.id}
@@ -1083,12 +1064,19 @@ const navigate = useNavigate();
                     handleImageUpload={handleImageUpload}
                   />
                 </div>
-              )
-            )
-          )}
+          ))}
         </div>
       </div>
     </div>
   );
 };
-export default PostPage;
+
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
+
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostPage);

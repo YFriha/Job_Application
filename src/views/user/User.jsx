@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 // reactstrap components
 import axios from "axios";
 import {
@@ -16,6 +16,10 @@ import {
   Col,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "primereact/toast";
+
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../../Redux/actions"; // Import your action
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function User() {
@@ -30,17 +34,17 @@ function User() {
   const [postalCode, setPostalCode] = useState("");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
-
+  const toast = useRef(null);
   const navigate = useNavigate();
   async function loadRecruiter() {
     try {
-      const response = await fetch(`${apiUrl}/recruiters/1/find/`, {
+      const response = await fetch(`${apiUrl}/recruiters/${userId}/find/`, {
         headers: {
           "Content-type": "application/json",
           Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
         },
       });
-      console.log("response : ", response);
+      console.log("response : ", response.data);
       if (response.status === 401) {
         console.log("Unauthorized. Redirecting to login page...");
         navigate("/login");
@@ -73,7 +77,7 @@ function User() {
     console.log("test 2", updatedData);
     try {
       const response = await axios.patch(
-        `${apiUrl}recruiters/1/update/`,
+        `${apiUrl}recruiters/${userId}/update/`,
         updatedData
       );
       if (response.status === 200) {
@@ -81,6 +85,12 @@ function User() {
         console.log(`Post with ID has been updated.`);
         // Reload the post data if needed
         loadRecruiter();
+        toast.current.show({
+          severity: "success",
+          summary: "Successful",
+          detail: "Recruter updated",
+          life: 3000,
+        });
       } else {
         // Handle errors (e.g., show an error message)
         console.error(`Error updating post with ID : ${response.statusText}`);
@@ -105,8 +115,45 @@ function User() {
 
     updateRecruiter(updateData);
   }
+
+  const userId = getUserIdFromAccessToken();
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
+
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log('payload : ', jsonPayload)
+
+    return JSON.parse(jsonPayload);
+  }
+
+
   return (
     <>
+          <Toast ref={toast} />
+
       <div className="content">
         <Row>
           <Col md="4">
@@ -301,4 +348,12 @@ function User() {
   );
 }
 
-export default User;
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
+
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(User);

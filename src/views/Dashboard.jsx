@@ -29,9 +29,10 @@ import {
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 
+import { connect } from "react-redux"; // Import connect from react-redux
+import { setUserId } from "../Redux/actions"; // Import your action
 function Dashboard() {
-
-  const [accessToken, setAccessToken] = useState('');
+  const [accessToken, setAccessToken] = useState("");
 
   const currentDate = new Date();
   const lastFiveMonthsLabels = [];
@@ -74,14 +75,12 @@ function Dashboard() {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
 
-
   useEffect(() => {
-    const storedAccessToken = localStorage.getItem('accessToken');
+    const storedAccessToken = localStorage.getItem("accessToken");
     if (storedAccessToken) {
       setAccessToken(storedAccessToken);
     }
   }, []);
-
 
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -174,42 +173,76 @@ const navigate = useNavigate();
   }, []);
   const LoadApplications = async () => {
     const response = await fetch(
-      `${apiUrl}/recruiters/1/total_application_and_post/`, {
+      `${apiUrl}recruiters/${userId}/total_application_and_post/`,
+      {
       headers: {
         "Content-type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
       },
-    });
+      }
+    );
     console.log("response : ", response);
     if (response.status === 401) {
       console.log("Unauthorized. Redirecting to login page...");
       navigate("/login");
       // Stop execution of the function after redirecting
       return; // or throw new Error('Unauthorized'); depending on your requirement
-    };
+    }
     const json = await response.json();
     setPosts(json.total_posts);
     setApplicants(json.total_applications);
     console.log("posts : ", json);
     return json;
   };
+  function getUserIdFromAccessToken() {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.error("No access token found in local storage");
+      return null;
+    }
 
+    try {
+      const decodedToken = parseJwt(accessToken);
+      const userId = decodedToken.user_id; // Adjust according to your JWT payload structure
+      return userId;
+    } catch (error) {
+      console.error("Failed to decode access token", error);
+      return null;
+    }
+  }
+  function parseJwt(token) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    console.log('payload : ', jsonPayload)
+
+    return JSON.parse(jsonPayload);
+  }
   const LoadGenderChart = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/recruiters/1/candidates_by_gender_per_recruiter/`, {
+        `${apiUrl}recruiters/${userId}/candidates_by_gender_per_recruiter/`,
+        {
           headers: {
             "Content-type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
           },
-        });
+        }
+      );
         console.log("response : ", response);
         if (response.status === 401) {
           console.log("Unauthorized. Redirecting to login page...");
           navigate("/login");
           // Stop execution of the function after redirecting
           return; // or throw new Error('Unauthorized'); depending on your requirement
-        };
+      }
       const json = await response.json();
       console.log("gender data:", json);
       setGenderData(json);
@@ -236,16 +269,20 @@ const navigate = useNavigate();
       console.error("Error fetching gender data:", error);
     }
   };
+
+  const userId = getUserIdFromAccessToken();
   const LoadPostsChart = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/recruiters/1/candidates_applied_to_RHposts/`, {
+        `${apiUrl}recruiters/${userId}/candidates_applied_to_RHposts/`,
+        {
           headers: {
             "Content-type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
           },
-        });
-        console.log("response : ", response);
+        }
+      );
+      console.log("response --->>: ", userId);
         if (response.status === 401) {
           console.log("Unauthorized. Redirecting to login page...");
           navigate("/login");
@@ -326,24 +363,23 @@ const navigate = useNavigate();
       display: false,
     },
     type: "bar",
-    
   };
 
   const transformData2 = (data) => {
     const transformedData = [];
     for (const month in data) {
-      console.log('this is the month : ', month);
+      console.log("this is the month : ", month);
       const monthData = data[month];      
-      console.log('this is the monthData : ', monthData);
+      console.log("this is the monthData : ", monthData);
 
       for (const postId in monthData) {
-        console.log("this is the postId ",postId);
+        console.log("this is the postId ", postId);
         const post = monthData[postId];
-        console.log("this is the post ",post);
+        console.log("this is the post ", post);
         const postIndex = transformedData.findIndex(
           (item) => item.id === postId
         );
-        console.log("this is the postIndex ",postIndex);
+        console.log("this is the postIndex ", postIndex);
         if (postIndex !== -1) {
           // If the post already exists in transformedData, update its count for the current month
           transformedData[postIndex][month] = post["total_candidates"] || 0;
@@ -404,7 +440,6 @@ const navigate = useNavigate();
 
   return (
     <>
-   
       <div className="content">
         <Row>
           <Col lg="3" md="6" sm="6">
@@ -648,4 +683,12 @@ const navigate = useNavigate();
   );
 }
 
-export default Dashboard;
+const mapStateToProps = (state) => ({
+  userId: state.userId,
+});
+
+const mapDispatchToProps = {
+  setUserId,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
