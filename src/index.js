@@ -20,13 +20,13 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <Provider store={store}>
-  <BrowserRouter>
-    <Routes>
-      <Route path="/admin/*" element={<AdminLayout />} />
-      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/home" element={<Home />} />
-      {/* <Route path="/reset_password" element={<ForgotPassword />} /> */}
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin/*" element={<AdminLayout />} />
+        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        {/* <Route path="/reset_password" element={<ForgotPassword />} /> */}
         <Route
           path="/post/Postdetails/:postid/:imageSrc/:title/:description/:requirement?/:deadline/:company"
           element={<PostDetails />}
@@ -35,7 +35,7 @@ root.render(
           path="/intern/Postdetails/:internid/:imageSrc/:title/:description/:requirement?/:deadline/:company"
           element={<InternDetails />}
         />
-    </Routes>
-  </BrowserRouter>
+      </Routes>
+    </BrowserRouter>
   </Provider>
 );

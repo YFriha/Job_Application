@@ -1077,7 +1077,7 @@ const InternshippsDemo=()=> {
       >
        <div class="row d-flex align-items-center">
             <div class="col-md-6">
-        <DialogTitle>details</DialogTitle>
+                <DialogTitle>details</DialogTitle>
             </div>
             <div class="col-md-6 text-right mr-2">
             {state ? (
@@ -1094,22 +1094,22 @@ const InternshippsDemo=()=> {
         <DialogContent>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <IconButton
-            sx={{
-              color: "#009688",
-            }}
-            onClick={() => {
+              sx={{
+                  color: "#009688",
+              }}
+              onClick={() => {
                   statechange(true);
-              Scrapping();
+                  Scrapping();
               console.log(interns);
-            }}
-            onMouseUp={() => {
-              setTimeout(() => {
-                code_outlook();
-                setIsScrappingLaunched(true);
-              }, 3000);
-            }}
-            color="inherit"
-            aria-label="delete"
+              }}
+              onMouseUp={() => {
+                  setTimeout(() => {
+                      code_outlook();
+                      setIsScrappingLaunched(true);
+                  }, 3000);
+              }}
+              color="inherit"
+              aria-label="delete"
           >
               <RefreshIcon />
           </IconButton>

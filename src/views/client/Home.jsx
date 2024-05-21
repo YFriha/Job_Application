@@ -53,12 +53,12 @@ function Home() {
           <div className="mycard-scroll">
             {allJobs.map((job, index) => (
               <div key={index} onClick={() => handleCardClick(job)}>
-              <MyCard
-                title={job.title}
+                <MyCard
+                  title={job.title}
                   deadline={job.deadline}
                   description={job.description}
-                image={job.image}
-              />
+                  image={job.image}
+                />
               </div>
             ))}
           </div>
@@ -77,7 +77,7 @@ function Home() {
               />
               
             ) : (
-            <MyCardDetails
+              <MyCardDetails
                 title="{selectedJob.title}"
                 description="{selectedJob.description}"
                 requirements="{selectedJob.requirements}"
@@ -85,7 +85,7 @@ function Home() {
                 mode="{selectedJob.mode}"
                 deadline="{selectedJob.deadline}"
                 image={pulseLogo}
-            />
+              />
             )}
            
             

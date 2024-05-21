@@ -557,7 +557,7 @@ import { useNavigate } from "react-router-dom";
 
 import { connect } from "react-redux"; // Import connect from react-redux
 import { setUserId } from "../../Redux/actions"; // Import your action
-        
+
 // import ImageUploadButton from "./ImageUploadButton";
 // import { generateRandomPassword } from "./GenerateRandomPassword";
 const PostPage = () => {
@@ -584,7 +584,7 @@ const PostPage = () => {
   useEffect(() => {
     (async () => await Load())();
   }, []);
-const navigate = useNavigate();
+  const navigate = useNavigate();
   async function Load() {
     const response = await fetch(`${apiUrl}/posts/list/${userId}/`, {
       headers: {
@@ -1049,21 +1049,21 @@ const navigate = useNavigate();
         </Stack>
         <div className="app">
           {filteredCards.map((post) => (
-              // console.log("requirements :  ", post.image),
-                <div className="my-food" key={post.postId}>
-                  <CardPost
-                    postid={post.id}
-                    imageSrc={post.image}
-                    title={post.title}
-                    description={post.description}
-                    requirement={post.requirements}
-                    deadline={post.deadline}
-                    company={post.company}
-                    onDeletePost={deletePostById}
-                    updatePost={updatePost}
-                    handleImageUpload={handleImageUpload}
-                  />
-                </div>
+            // console.log("requirements :  ", post.image),
+            <div className="my-food" key={post.postId}>
+              <CardPost
+                postid={post.id}
+                imageSrc={post.image}
+                title={post.title}
+                description={post.description}
+                requirement={post.requirements}
+                deadline={post.deadline}
+                company={post.company}
+                onDeletePost={deletePostById}
+                updatePost={updatePost}
+                handleImageUpload={handleImageUpload}
+              />
+            </div>
           ))}
         </div>
       </div>

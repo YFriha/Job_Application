@@ -1,54 +1,53 @@
 .cont {
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
 
 
 .mycard-scrolll {
-    display: inline-block;
-    height: 552px; 
-    width: 500px;
-    padding-top: 50px;
+  display: inline-block;
+  height: 552px;
+  width: 500px;
+  padding-top: 50px;
   transition: margin-top 0.3s, transform 0.3s;
-  }
+}
 
 .home {
-    min-height: 200px;
-    width: 1200px;
-    padding-left: 100px;
+  min-height: 200px;
+  width: 1200px;
+  padding-left: 100px;
   display: flex;
   justify-content: space-between;
 }
-    
-  .fixed {
-    position: fixed;
+
+.fixed {
+  position: fixed;
   top: 20px; /* Adjust this value to set the distance from the top */
   right: 20px; /* Adjust this value to set the margin from the right */
   width: 500px; /* Ensure the width remains the same */
   margin-top: 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: scale(1); /* Ensure no scaling is applied */
-  }
+}
 
 
-  
-  .mycard-scroll::-webkit-scrollbar {
+
+.mycard-scroll::-webkit-scrollbar {
   display: none;
-  }
-  
-  .mycard-scroll {
+}
+
+.mycard-scroll {
   -ms-overflow-style: none;
   scrollbar-width: none;
-  }
+}
 
-  .share-button {
-    color: #9cd6d1;
-    transition: color 0.3s;
-  }
-  
-  .share-button:hover {
-    background-color: #c0fcf6;
-  }
-  
+.share-button {
+  color: #9cd6d1;
+  transition: color 0.3s;
+}
+
+.share-button:hover {
+  background-color: #c0fcf6;
+}

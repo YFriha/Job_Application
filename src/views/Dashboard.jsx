@@ -163,7 +163,7 @@ function Dashboard() {
 
   const transformedGenderData = transformData(genderData);
   console.log("Data transformed ", transformedGenderData);
-const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       await LoadApplications();
@@ -175,10 +175,10 @@ const navigate = useNavigate();
     const response = await fetch(
       `${apiUrl}recruiters/${userId}/total_application_and_post/`,
       {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
-      },
+        headers: {
+          "Content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+        },
       }
     );
     console.log("response : ", response);
@@ -236,12 +236,12 @@ const navigate = useNavigate();
           },
         }
       );
-        console.log("response : ", response);
-        if (response.status === 401) {
-          console.log("Unauthorized. Redirecting to login page...");
-          navigate("/login");
-          // Stop execution of the function after redirecting
-          return; // or throw new Error('Unauthorized'); depending on your requirement
+      console.log("response : ", response);
+      if (response.status === 401) {
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
       }
       const json = await response.json();
       console.log("gender data:", json);
@@ -283,12 +283,12 @@ const navigate = useNavigate();
         }
       );
       console.log("response --->>: ", userId);
-        if (response.status === 401) {
-          console.log("Unauthorized. Redirecting to login page...");
-          navigate("/login");
-          // Stop execution of the function after redirecting
-          return; // or throw new Error('Unauthorized'); depending on your requirement
-        };
+      if (response.status === 401) {
+        console.log("Unauthorized. Redirecting to login page...");
+        navigate("/login");
+        // Stop execution of the function after redirecting
+        return; // or throw new Error('Unauthorized'); depending on your requirement
+      };
       const json = await response.json();
       console.log("candidates_applied_to_RHposts :", json);
       setPostsData(json);
@@ -369,7 +369,7 @@ const navigate = useNavigate();
     const transformedData = [];
     for (const month in data) {
       console.log("this is the month : ", month);
-      const monthData = data[month];      
+      const monthData = data[month];
       console.log("this is the monthData : ", monthData);
 
       for (const postId in monthData) {
