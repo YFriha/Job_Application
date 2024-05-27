@@ -1030,9 +1030,7 @@ const Login = (props) => {
                     }}
                     onClick={onClick}
                   >
-
-                    <FaGoogle /> Sign in with Google
-
+                  <FaGoogle /> Sign in with Google
                   </Button>
                 )}
               />
