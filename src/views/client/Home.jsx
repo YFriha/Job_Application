@@ -79,7 +79,6 @@ function Home() {
                 mode={selectedJob.mode}
                 deadline={selectedJob.deadline}
                 image={selectedJob.image}
-                id={selectedJob.id}
               />
               
             ) : (

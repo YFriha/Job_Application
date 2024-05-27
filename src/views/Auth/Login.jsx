@@ -548,7 +548,6 @@ const PasswordInput = ({ password, handlePassword, required }) => {
     />
   );
 };
-
 const Login = (props) => {
   const [authMode, setAuthMode] = useState("signin");
   const theme = useTheme();
@@ -1031,7 +1030,7 @@ const Login = (props) => {
                     }}
                     onClick={onClick}
                   >
-                  <FaGoogle /> Sign in with Google
+                    <FaGoogle /> Sign in with Google
                   </Button>
                 )}
               />
@@ -1040,17 +1039,17 @@ const Login = (props) => {
                 className="btn fbBtn"
                 onClick={linkedinAuth}
                 color="primary"
-                  variant="contained"
-                  sx={{
+                variant="contained"
+                sx={{
                   bgcolor: "#0762C8",
-                    ":hover": {
-                      bgcolor: "#0762C7",
-                    },
+                  ":hover": {
+                    bgcolor: "#0762C7",
+                  },
                 }}
               >
-                  <FaLinkedin /> Sign in with LinkedIn
-                </Button>
-              </div>
+                <FaLinkedin /> Sign in with LinkedIn
+              </Button>
+            </div>
 // =======
             //   <div className="d-flex justify-content-center mt-3">
             //     <button className="btn googleBtn  me-2">

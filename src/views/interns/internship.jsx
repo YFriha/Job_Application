@@ -411,6 +411,9 @@ const InternshippsDemo=()=> {
   const [code, setCode] = useState("");
   const [rowEmail, setRowEmail] = useState("");
   const [emailForSending, setEmailForSending] = useState("");
+  const [text, setText] = useState('');
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
 
   // const switcher = useContext(SwitcherContext);
   const [switcherValue, setSwitcherValue] = useState(true);
@@ -433,14 +436,12 @@ const InternshippsDemo=()=> {
   const handleClose = () => {
     hideDeleteInternshippsDialog();
   };
- 
 
   const hideDeleteInternshippsDialog = () => {
     setDeleteInternshippsDialog(false);
   };
   const hidde_finishing = () => {
     setfinishing(false)
-    setInternDetails(false)
   };
 
   const confirmDeleteInternshipp = (internship) => {
@@ -573,6 +574,45 @@ const InternshippsDemo=()=> {
       console.error("Error fetching data:", error);
     }
   };
+//   const handlePost = async () => {
+//     try {
+//         const response = await axios.post('http://your-backend-url.com/create-linkedin-ugc-post/', {
+//             text: text,
+//             media_url: mediaUrl
+//         });
+
+//         if (response.status === 201) {
+//             setResponseMessage('UGC post created successfully');
+//         } else {
+//             setResponseMessage('Failed to create UGC post');
+//         }
+//     } catch (error) {
+//         console.error('Error creating UGC post:', error);
+//         setResponseMessage('Error creating UGC post');
+//     }
+// };
+const handleCreatePost = async (postText) => {
+  try {
+      const response = await axios.post(
+          `${apiUrl}ai/create-linkedin-ugc-post/`,
+          {
+              text: postText
+          },
+          {
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+              }
+          }
+      );
+      console.log(response.data);
+      // Handle success
+  } catch (error) {
+      console.error('Error creating LinkedIn UGC post:', error);
+      // Handle error
+  }
+};
+
   async function save(event) {
     try {
       await axios.post(`${apiUrl}ai/internship/create/`, {
@@ -583,6 +623,9 @@ const InternshippsDemo=()=> {
 
         recruiter: userId,
       });
+      // setText()
+      handleCreatePost(internshipSubject);
+      // handlePost();
       // alert("Post Registation Successfully");
       setInternshipSubject("");
       setEmail("");
@@ -620,7 +663,6 @@ const InternshippsDemo=()=> {
       setIsScrappingLaunched(false)
       statechange(false)
       setfinishing(true)
-      LoadIntern(id);
       // setInterns(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -782,12 +824,8 @@ const InternshippsDemo=()=> {
     }
   };
   const [visible1, setVisible1] = useState(false);
-  const [position, setPosition] = useState("right");
   const [subject, setSubject] = useState("");
-  const show = () => {
-    setPosition("right");
-    setVisible1(true);
-  };
+  
   //   function MyDialog() {
 
   //     const footerContent = (
@@ -825,12 +863,10 @@ const InternshippsDemo=()=> {
   //         </div>
   //     )
   // }
-  // const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState("");
-  const [recipient, setRecipient] = useState("");
-  const [myMail, setMyMail] = useState("");
+  
   const [status, setStatus] = useState("");
-  const sendMessage = async (subject, email) => {
+  const sendMessage = async (email) => {
+    console.log('subject ::',subject)
     try {
       const response = await fetch(`${apiUrl}ai/send-email/`, {
         method: "POST",
@@ -841,7 +877,6 @@ const InternshippsDemo=()=> {
           subject:subject,
           message:emailForSending,
           recipient:email,
-          // myMail,
         }),
       });
       const data = await response.json();
@@ -885,7 +920,7 @@ const InternshippsDemo=()=> {
     `);
     // handleClose()
     setSubject(`${row_email.subject}`);
-    sendMessage(row_email.subject, row_email.email);
+    sendMessage(row_email.email);
     setVisible1(true);
   };
   return (
@@ -906,7 +941,6 @@ const InternshippsDemo=()=> {
           dataKey="id"
           paginator
           rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} internships"
           globalFilter={globalFilter}
@@ -1104,15 +1138,7 @@ const InternshippsDemo=()=> {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
               </div>
           ) : 
-              // <div style={{ width: "60px", height: "60px" }}>
-              //   <button type="button" class="btn-close" aria-label="Close" >
-              //   </button>
-              // </div>
-              <div class="alert  alert-dismissible fade show" role="alert" style={{ marginTop: "10px" }}>
-                <strong>Scrapping is finished!</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
-              </div>
-
+          null
 
           }
 
@@ -1156,7 +1182,7 @@ const InternshippsDemo=()=> {
           </div>
         </DialogContent>
         <DialogActions>
-          {/* <Button
+          <Button
             variant="contained"
             onClick={() => {
               setInternDetails(false);
@@ -1168,8 +1194,8 @@ const InternshippsDemo=()=> {
               },
             }}
           >
-            hallo
-          </Button> */}
+            Cancel
+          </Button>
           {/* <Button onClick={deleteInternshipp} color="primary">
             Delete
           </Button> */}
@@ -1187,8 +1213,6 @@ const InternshippsDemo=()=> {
             right: 0, // Adjust this value as needed
           },
         }}
-        // draggable={false}
-        // resizable={false}
       >
         <DialogTitle>Send Message</DialogTitle>
         <DialogContent>
@@ -1249,7 +1273,7 @@ const InternshippsDemo=()=> {
             color="inherit"
             aria-label="delete"
           >
-            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+            <SendRoundedIcon />
           </IconButton>
         </DialogActions>
       </Dialog>

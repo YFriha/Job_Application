@@ -151,6 +151,13 @@ function Header(props) {
                   <span className="d-lg-none d-md-block">Account</span>
                 </p>
               </Link>
+              <Link to="/login" className="nav-link btn-rotate">
+                
+                <i className="nc-icon nc-button-power" />
+                <p>
+                  <span className="d-lg-none d-md-block">logOut</span>
+                </p>
+              </Link>
             </NavItem>
           </Nav>
         </Collapse>

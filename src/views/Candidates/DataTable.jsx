@@ -14,7 +14,6 @@ const DataTable = ({ candidates, knob }) => {
       { Header: "Step", accessor: "step" },
       { Header: "City", accessor: "city" },
       { Header: "Address", accessor: "address" },
-      // { Header: "score", accessor: "score_matching" },
     ],
     []
   );

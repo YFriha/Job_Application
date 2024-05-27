@@ -127,7 +127,6 @@ const DataInternsTable = ({ intern, openDialog, rowEmail }) => {
                     <IconButton
                       sx={{
                         color: "#9f9f9f",
-                        with: "70px"
                       }}
                       onClick={() => {
                         Open(row);

@@ -32,7 +32,6 @@ import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux"; // Import connect from react-redux
 import { setUserId } from "../Redux/actions"; // Import your action
 function Dashboard() {
-  const [accessToken, setAccessToken] = useState("");
 
   const currentDate = new Date();
   const lastFiveMonthsLabels = [];
@@ -72,16 +71,17 @@ function Dashboard() {
   });
 
   const [postsData, setPostsData] = useState([]);
-  const [chartData, setChartData] = useState({});
-  const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
     const storedAccessToken = localStorage.getItem("accessToken");
-    if (storedAccessToken) {
-      setAccessToken(storedAccessToken);
+    if (!storedAccessToken ||storedAccessToken==='undefined' ) {
+      redirectToLogin()
     }
   }, []);
 
+  const redirectToLogin = () => {
+        navigate("/login");
+      };
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
@@ -141,8 +141,6 @@ function Dashboard() {
       },
     };
 
-    setChartData(data);
-    setChartOptions(options);
   }, []);
 
   const transformData = (data) => {
@@ -177,7 +175,7 @@ function Dashboard() {
       {
         headers: {
           "Content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+          Authorization: "Bearer " + localStorage.getItem("accessToken"), 
         },
       }
     );
