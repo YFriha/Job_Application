@@ -28,28 +28,59 @@
 // }
 
 //-==============================================================================
-
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Button, CardActionArea, CardActions } from "@mui/material";
+import { Button, CardActionArea, Modal, Box } from "@mui/material";
+import Lottie from 'react-lottie';
+import successAnimation from './Animation - 1716461046736.json'; // Update the path to your success animation JSON file
 import "./home.css";
 import pulseLogo from 'assets/img/PULSE-digital-logo.png'; // Adjust the path according to your project structure
-import {useState, useEffect} from 'react';
-import { useNavigate } from "react-router-dom";
-export default function MyCard(props, title, description, requirements, localisation, mode, deadline, image) {
-  console.log(props.image);
+import DevOpsLoop from 'assets/img/DevOpsLoop.png'; // Adjust the path according to your project structure
+import ApplicationForm from "./ApplicationForm ";
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+const successOptions = {
+  loop: false,
+  autoplay: true,
+  animationData: successAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+export default function MyCard(props) {
   const [isFixed, setIsFixed] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [showForm, setShowForm] = useState(false);
+  const [Hiddforum, setHiddforum] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const handleApplyClick = () => {
-    navigate("/login");
+    setShowForm(true);
   };
+
+  const handleClose = () => {
+    setShowForm(false);
+    setHiddforum(false); // Reset Hiddforum state when modal is manually closed
+    setShowSuccess(false); // Reset success animation state
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 240) {
-        // Change 100 to the scroll position where you want it to become fixed
         setIsFixed(true);
       } else {
         setIsFixed(false);
@@ -60,18 +91,26 @@ export default function MyCard(props, title, description, requirements, localisa
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (Hiddforum) {
+      setShowSuccess(true);
+      setTimeout(() => {
+        handleClose();
+      }, 3000); // Display success animation for 3 seconds before closing modal
+    }
+  }, [Hiddforum]);
+
   return (
     <div className={`fixed-component ${isFixed ? "fixed" : "fixed2"}`}>
-      <Card
-        
-  
-      >
-        <CardActionArea  >
+
+      <Card>
+        <CardActionArea>
           <CardMedia
             component="img"
-            height="80"
+            height="200"
             width="250"
-            image={pulseLogo}
+            image={props.image ? props.image : DevOpsLoop}
             alt="Job Post Image"
           />
           <CardContent>
@@ -93,18 +132,35 @@ export default function MyCard(props, title, description, requirements, localisa
             <Typography variant="body2" color="text.secondary">
               {props.deadline}
             </Typography>
+            {/* <Typography variant="body2" color="text.secondary">
+              {props.id}
+            </Typography> */}
           </CardContent>
         </CardActionArea>
-
-        {/* <CardActions>
-        <Button size="small" className="share-button" style={{color: '#9cd6d1'}}>
-          Share
-        </Button>
-      </CardActions> */}
-      <div className="d-grid gap-2 ">
-        <button class="btn btn-primary" type="button" onClickCapture={handleApplyClick} >Apply</button>
-      </div>
+        <div className="d-grid gap-2">
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClickCapture={handleApplyClick}
+          >
+            Apply
+          </button>
+        </div>
       </Card>
+      <Modal
+        open={showForm}
+        onClose={handleClose}
+        aria-labelledby="application-form-modal-title"
+        aria-describedby="application-form-modal-description"
+      >
+        <Box sx={style}>
+          {showSuccess ? (
+            <Lottie options={successOptions} height={200} width={200} />
+          ) : (
+            <ApplicationForm setHiddforum={setHiddforum} post_id={props.id} post_title={props.title} /> 
+          )}
+        </Box>
+      </Modal>
     </div>
   );
 }

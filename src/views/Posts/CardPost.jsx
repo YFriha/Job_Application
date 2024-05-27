@@ -20,6 +20,7 @@ import AlertDialogSlide from "../../components/Dialog/AlertDialogSlide";
 
 import { connect } from "react-redux"; // Import connect from react-redux
 import { setUserId } from "../../Redux/actions"; // Import your action
+import "./post.css";
 function CardPost({
   postid,
   imageSrc,
@@ -118,9 +119,9 @@ function CardPost({
     return JSON.parse(jsonPayload);
   }
   return (
-    <div className="card">
-      <img src={imageSrc} alt={title} className="card-image img-responsive" />
-      <div className="card-content">
+    <div className="card card2">
+      <img src={imageSrc} alt={title} height={150} className="card-image img-responsive" />
+      <div className="card-content "  style={{ flexGrow: 1 }}>
         <h2 className="card-title" style={{ color: "#9cd6d1" }}>
           {title}
         </h2>
@@ -134,7 +135,7 @@ function CardPost({
             <span key={index} style={{ color: "#9f9f9f" }}>
               {req}
               {index !== requirement.length - 1 ? ", " : "."}
-              <br />
+              {/* <br /> */}
             </span>
           ))}
         </p>
@@ -143,11 +144,7 @@ function CardPost({
           <span style={{ color: "#009688" }}>Deadline :</span>
           <span style={{ color: "#9f9f9f" }}>{deadline}</span>
         </p>
-        <p className="card-description">
-          <span style={{ color: "#009688" }}>Company :</span>{" "}
-          <span style={{ color: "#9f9f9f" }}>{company}</span>
-        </p>
-        <div className="row ">
+        <div className="row " style={{ marginBottom: "-18px" }}>
           <div className="col-8">
             <Button
               className="card-button"

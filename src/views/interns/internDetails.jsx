@@ -127,6 +127,7 @@ const DataInternsTable = ({ intern, openDialog, rowEmail }) => {
                     <IconButton
                       sx={{
                         color: "#9f9f9f",
+                        with: "70px"
                       }}
                       onClick={() => {
                         Open(row);
@@ -134,7 +135,7 @@ const DataInternsTable = ({ intern, openDialog, rowEmail }) => {
                       color="inherit"
                       aria-label="delete"
                     >
-                      <MailOutlineIcon />
+                      <MailOutlineIcon style={{ width: "35px", height: "35px" }}  />
                     </IconButton>
                   </div>
                 </tr>

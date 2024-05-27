@@ -383,6 +383,7 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
 import { connect } from "react-redux"; // Import connect from react-redux
 import { setUserId } from "../../Redux/actions"; // Import your action
+import { Margin } from "@mui/icons-material";
 
 
 const SwitcherContext = React.createContext();
@@ -400,6 +401,7 @@ const InternshippsDemo=()=> {
   const [open, openchange] = useState(false);
   const [visible] = React.useState(true);
   const [state, statechange] = useState(false);
+  const [finishing, setfinishing] = useState(false); 
   const [internshipSubject, setInternshipSubject] = useState("");
   const [email, setEmail] = useState("");
   const [internshipDeadline, setInternshipDeadline] = useState("");
@@ -431,9 +433,14 @@ const InternshippsDemo=()=> {
   const handleClose = () => {
     hideDeleteInternshippsDialog();
   };
+ 
 
   const hideDeleteInternshippsDialog = () => {
     setDeleteInternshippsDialog(false);
+  };
+  const hidde_finishing = () => {
+    setfinishing(false)
+    setInternDetails(false)
   };
 
   const confirmDeleteInternshipp = (internship) => {
@@ -573,6 +580,7 @@ const InternshippsDemo=()=> {
         email: email,
         location: internshipLocation,
         deadline: internshipDeadline,
+
         recruiter: userId,
       });
       // alert("Post Registation Successfully");
@@ -611,6 +619,8 @@ const InternshippsDemo=()=> {
       console.log("after Scrapping : ", result);
       setIsScrappingLaunched(false)
       statechange(false)
+      setfinishing(true)
+      LoadIntern(id);
       // setInterns(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1081,13 +1091,31 @@ const InternshippsDemo=()=> {
             </div>
             <div class="col-md-6 text-right mr-2">
             {state ? (
-                <div className="d-flex align-items-center justify-content-end">
+                <div className="d-flex align-items-center justify-content-end" style={{ marginRight: "20px" }}>
                     <strong>Scrapping...</strong>
                     <div className="spinner-border text-success" role="status">
                         <span className="sr-only">Scrapping...</span>
                     </div>
                 </div>
-            ) : null}
+            ) : 
+            finishing ? (
+              <div class="alert alert-success alert-dismissible fade show" role="alert" style={{ marginTop: "20px" }}>
+                <strong>Scrapping is finished!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
+              </div>
+          ) : 
+              // <div style={{ width: "60px", height: "60px" }}>
+              //   <button type="button" class="btn-close" aria-label="Close" >
+              //   </button>
+              // </div>
+              <div class="alert  alert-dismissible fade show" role="alert" style={{ marginTop: "10px" }}>
+                <strong>Scrapping is finished!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
+              </div>
+
+
+          }
+
             </div>
         </div>
         
@@ -1128,7 +1156,7 @@ const InternshippsDemo=()=> {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => {
               setInternDetails(false);
@@ -1140,8 +1168,8 @@ const InternshippsDemo=()=> {
               },
             }}
           >
-            Cancel
-          </Button>
+            hallo
+          </Button> */}
           {/* <Button onClick={deleteInternshipp} color="primary">
             Delete
           </Button> */}
@@ -1221,7 +1249,7 @@ const InternshippsDemo=()=> {
             color="inherit"
             aria-label="delete"
           >
-            <SendRoundedIcon />
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
           </IconButton>
         </DialogActions>
       </Dialog>

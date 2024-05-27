@@ -26,7 +26,7 @@
   position: fixed;
   top: 20px; /* Adjust this value to set the distance from the top */
   right: 20px; /* Adjust this value to set the margin from the right */
-  width: 500px; /* Ensure the width remains the same */
+  width: 500px;
   margin-top: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: scale(1); /* Ensure no scaling is applied */

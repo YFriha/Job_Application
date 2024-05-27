@@ -514,7 +514,10 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
 import { connect } from "react-redux"; // Import connect from react-redux
 import { setUserId } from "../../Redux/actions"; // Import your action
-
+import { gapi } from "gapi-script";
+// import { GoogleLogin } from "../../components/GoogleLogin/googleLogin";
+import { GoogleLogin } from "react-google-login";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 const PasswordInput = ({ password, handlePassword, required }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -571,8 +574,8 @@ const Login = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("===>", type);
-  }, [type]);
+    localStorage.clear();
+  }, []);
 
   useEffect(() => {
     if (window.location.href.includes("code=")) {
@@ -638,12 +641,83 @@ const Login = (props) => {
     }
   };
 
+  const clientId =
+    "1065255482933-3pgtuvdlckvr8s4uo1ecko09gm2blo9s.apps.googleusercontent.com";
+
+  // useEffect(() => {
+  //   console.log('clientId is : ',clientId)
+  //   function start() {
+  //     gapi.client.init({
+  //       clientId: clientId,
+  //       scope: "",
+  //     },
+  //   console.log('initialized')
+  //   );
+  //   }
+  //   // Load Google API client and call start function to initialize
+  //   gapi.load("client:auth2", start);
+  // },[clientId]);
+
+  useEffect(() => {
+    const loadGoogleAPI = () => {
+      window.gapi.load("client", () => {
+        console.log("Google API Client Loaded");
+        // You can now use the gapi object to access Google APIs
+      });
+    };
+
+    if (!window.gapi) {
+      // Handle case where Google API client library failed to load
+      console.error("Failed to load Google API client library");
+      return;
+    }
+
+    loadGoogleAPI();
+  }, []);
+
+  const fetchGoogleData = async (res) => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}authentication/google/userinfo/`,
+        { withCredentials: true, params: res.profileObj }
+      );
+      // const response = await fetch(`${apiUrl}authentication/google/userinfo/`, {
+      //   headers: {
+      //     "Content-type": "application/json",
+      //     // Authorization: "Bearer " + localStorage.getItem("accessToken"), // Add a space after 'Bearer'
+      //     params : res.profileObj
+      //   },
+      // });
+      console.log("this is the res data  : ", response.data);
+      console.log("simple log");
+      localStorage.setItem("accessToken", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token);
+      const userId = getUserIdFromAccessToken();
+      if (userId) {
+        console.log("User ID:", userId);
+        props.setUserId(userId); // Store userId in Redux
+      } else {
+        console.log("User ID not found or failed to decode token");
+      }
+      redirectToDashboard();
+    } catch (error) {
+      console.error("Error fetching data from callback:", error);
+    }
+  };
+  const onSuccess = (res) => {
+    console.log("Login Success: currentUser:", res.profileObj);
+    fetchGoogleData(res);
+  };
+
+  const onFailure = (res) => {
+    console.error("Login failed: res:", res);
+  };
+
   const linkedinAuth = async () => {
     console.log("LinkedInAuth");
     try {
       console.log(apiUrl);
-      window.location.href =
-        "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78q7n8oilzgi18&redirect_uri=http://localhost:3000/login&state=1234&scope=openid%20email%20profile";
+      window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=86o1ech9y4in4m&redirect_uri=${window.location.origin}/login&state=1234&scope=openid%20email%20profile`;
     } catch (error) {
       console.error("Error redirecting to LinkedIn authentication:", error);
     }
@@ -655,9 +729,9 @@ const Login = (props) => {
       const params = {
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: "http://localhost:3000/login",
-        client_id: "78q7n8oilzgi18",
-        client_secret: "WPL_AP0.khyYEipcPsAtKLM1.NzU5ODc1NDU1",
+        redirect_uri: `${apiUrl}login`,
+        client_id: "86o1ech9y4in4m",
+        client_secret: "WPL_AP0.jW3gypWTWCnun6rz.MTIxMTM2NzA2NA==",
       };
       const response = await axios.get(
         `${apiUrl}authentication/linkedin-callback/`,
@@ -709,7 +783,7 @@ const Login = (props) => {
         })
         .join("")
     );
-    console.log('payload : ', jsonPayload)
+    console.log("payload : ", jsonPayload);
 
     return JSON.parse(jsonPayload);
   }
@@ -745,6 +819,7 @@ const Login = (props) => {
         life: 3000,
       });
     } catch (err) {
+      console.error("Registration failed:", err);
       alert("post Registration Failed");
     }
   };
@@ -797,10 +872,13 @@ const Login = (props) => {
                     setLogin(event.target.value);
                   }}
                 ></TextField>
-                <PasswordInput
-                  password={password}
-                  handlePassword={(e) => setPassword(e.target.value)}
-                  required={true}
+                <TextField
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  id="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                 />
               </>
             ) : (
@@ -825,10 +903,14 @@ const Login = (props) => {
                     setEmail(event.target.value);
                   }}
                 ></TextField>
-                <PasswordInput
-                  password={password2}
-                  handlePassword={(e) => setPassword2(e.target.value)}
+                <TextField
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  id="password2"
                   required={true}
+                  value={password2}
+                  onChange={(event) => setPassword2(event.target.value)}
                 />
                 <Dropdown
                   value={selectedGender}
@@ -840,7 +922,7 @@ const Login = (props) => {
                   checkmark={true}
                   highlightOnSelect={false}
                 />
-                <Stack spacing={0} margin={0}>
+                {/* <Stack spacing={0} margin={0}>
                   <div className="row">
                     <div className="col">
                       <Typography
@@ -854,19 +936,24 @@ const Login = (props) => {
                       </Typography>
                     </div>
                     <div className="col">
-                      <InputSwitch
+                      {/* <InputSwitch
                         onChange={(e) => {
                           setIsSwitchChecked(e.value);
+
+                          setType(e.value ? "recruiter" : "candidate");
+                          setRole(e.value ? "r" : "c");
+
                           isSwitchChecked
                             ? setType("candidate")
                             : setType("recruiter");
-                          type === "candidate" ? setRole("c") : setRole("r");
+                          type === "candidate" ? setRole("r") : setRole("c");
+>>>>>>> master
                         }}
                         checked={isSwitchChecked}
-                      />
+                      /> 
                     </div>
                   </div>
-                </Stack>
+                </Stack> */}
                 {isSwitchChecked && (
                   <>
                     <TextField
@@ -901,38 +988,87 @@ const Login = (props) => {
             </Button>
           </div>
           {authMode === "signin" && (
-            <>
-              {/* <Button
+            <div className="d-flex justify-content-center mt-3">
+              {/* <GoogleLogin
+                  clientId={clientId} // Replace with your Google Client ID
+                  buttonText="Login"
+                  onSuccess={onSuccess}
+                  onFailure={onFailure}
+                  cookiePolicy={"single_host_origin"}
+                  isSignedIn={false}
+                />
+
+              <Button
+                className="btn googleBtn me-2"
                 color="primary"
                 variant="contained"
                 sx={{
-                  bgcolor:
-                    theme.palette.mode === "dark" ? "#009688" : "#9cd6d1",
+                  bgcolor: "#EA4335",
                   ":hover": {
-                    bgcolor:
-                      theme.palette.mode === "dark" ? "#9cd6d1" : "#009688",
+                    bgcolor: "#EA4335",
                   },
                 }}
-                onClick={linkedinAuth}
               >
-                LinkedIn
+                <FaGoogle /> Sign in with Google
               </Button> */}
-              <div className="d-flex justify-content-center mt-3">
-                <button className="btn googleBtn  me-2">
+
+              <GoogleLogin
+                clientId={clientId}
+                onSuccess={onSuccess}
+                onFailure={onFailure}
+                cookiePolicy={"single_host_origin"}
+                isSignedIn={false}
+                render={({ onClick }) => (
+                  <Button
+                    className="btn googleBtn me-2"
+                    color="primary"
+                    variant="contained"
+                    sx={{
+                      bgcolor: "#EA4335",
+                      ":hover": {
+                        bgcolor: "#EA4335",
+                      },
+                    }}
+                    onClick={onClick}
+                  >
                   <FaGoogle /> Sign in with Google
-                </button>
-                <Button className="btn fbBtn" onClick={linkedinAuth} color="primary"
-              variant="contained"
-              sx={{
-                bgcolor:  "#0762C8" ,
-                ":hover": {
-                  bgcolor: "#0762C7",
-                },
-              }}>
+                  </Button>
+                )}
+              />
+
+              <Button
+                className="btn fbBtn"
+                onClick={linkedinAuth}
+                color="primary"
+                  variant="contained"
+                  sx={{
+                  bgcolor: "#0762C8",
+                    ":hover": {
+                      bgcolor: "#0762C7",
+                    },
+                }}
+              >
                   <FaLinkedin /> Sign in with LinkedIn
                 </Button>
               </div>
-            </>
+// =======
+            //   <div className="d-flex justify-content-center mt-3">
+            //     <button className="btn googleBtn  me-2">
+            //       <FaGoogle /> Sign in with Google
+            //     </button>
+            //     <Button className="btn fbBtn" onClick={linkedinAuth} color="primary"
+            //       variant="contained"
+            //       sx={{
+            //     bgcolor:  "#0762C8" ,
+            //         ":hover": {
+            //           bgcolor: "#0762C7",
+            //         },
+            //       }}>
+            //       <FaLinkedin /> Sign in with LinkedIn
+            //     </Button>
+            //   </div>
+            // </>
+// >>>>>>> master
           )}
           <p className="text-center mt-2">
             Forgot{" "}

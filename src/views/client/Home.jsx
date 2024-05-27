@@ -5,6 +5,7 @@ import MyCard from "./Card";
 import "./home.css";
 import MyCardDetails from "./CardDetails";
 import pulseLogo from 'assets/img/PULSE-digital-logo.png'; // Adjust the path according to your project structure
+import DevOpsLoop from 'assets/img/DevOpsLoop.png'; // Adjust the path according to your project structure
 
 function Home() {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -39,10 +40,14 @@ function Home() {
           </Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link href="#">Home</Nav.Link>
-            <Nav.Link href="#">Saved post</Nav.Link> 
+            <Nav.Link href="#">Saved Posts</Nav.Link>
+            <Nav.Link href="#">Apllied Posts</Nav.Link>  
             <Nav.Link href="#">About us</Nav.Link>
             <Nav.Link href="#">Contact us</Nav.Link>
             <Nav.Link href="/login">Sign in</Nav.Link>
+            <Nav className="ms-auto">
+              <Nav.Link href="/login">your name</Nav.Link>
+            </Nav>
 
           </Nav>
         </Container>
@@ -74,6 +79,7 @@ function Home() {
                 mode={selectedJob.mode}
                 deadline={selectedJob.deadline}
                 image={selectedJob.image}
+                id={selectedJob.id}
               />
               
             ) : (
@@ -84,7 +90,7 @@ function Home() {
                 localisation="{selectedJob.localisation}"
                 mode="{selectedJob.mode}"
                 deadline="{selectedJob.deadline}"
-                image={pulseLogo}
+                image={DevOpsLoop}
               />
             )}
            

@@ -16,6 +16,11 @@
     z-index: 1000;
     /* display: none; */
   }
+  .card2{
+    height: 100%;
+    display:flex;
+    flex-direction:column; 
+  }
   
   .crud-modal-wrapper__modal {
     background-color: white;
