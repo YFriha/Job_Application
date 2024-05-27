@@ -436,12 +436,14 @@ const InternshippsDemo=()=> {
   const handleClose = () => {
     hideDeleteInternshippsDialog();
   };
+ 
 
   const hideDeleteInternshippsDialog = () => {
     setDeleteInternshippsDialog(false);
   };
   const hidde_finishing = () => {
     setfinishing(false)
+    setInternDetails(false)
   };
 
   const confirmDeleteInternshipp = (internship) => {
@@ -663,6 +665,7 @@ const handleCreatePost = async (postText) => {
       setIsScrappingLaunched(false)
       statechange(false)
       setfinishing(true)
+      LoadIntern(id);
       // setInterns(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1138,7 +1141,15 @@ const handleCreatePost = async (postText) => {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
               </div>
           ) : 
-          null
+              // <div style={{ width: "60px", height: "60px" }}>
+              //   <button type="button" class="btn-close" aria-label="Close" >
+              //   </button>
+              // </div>
+              <div class="alert  alert-dismissible fade show" role="alert" style={{ marginTop: "10px" }}>
+                <strong>Scrapping is finished!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={hidde_finishing}></button>
+              </div>
+
 
           }
 
@@ -1182,7 +1193,7 @@ const handleCreatePost = async (postText) => {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => {
               setInternDetails(false);
@@ -1194,8 +1205,8 @@ const handleCreatePost = async (postText) => {
               },
             }}
           >
-            Cancel
-          </Button>
+            hallo
+          </Button> */}
           {/* <Button onClick={deleteInternshipp} color="primary">
             Delete
           </Button> */}
@@ -1273,7 +1284,7 @@ const handleCreatePost = async (postText) => {
             color="inherit"
             aria-label="delete"
           >
-            <SendRoundedIcon />
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
           </IconButton>
         </DialogActions>
       </Dialog>

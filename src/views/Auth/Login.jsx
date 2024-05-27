@@ -1030,7 +1030,9 @@ const Login = (props) => {
                     }}
                     onClick={onClick}
                   >
+
                     <FaGoogle /> Sign in with Google
+
                   </Button>
                 )}
               />
@@ -1050,6 +1052,7 @@ const Login = (props) => {
                 <FaLinkedin /> Sign in with LinkedIn
               </Button>
             </div>
+
 // =======
             //   <div className="d-flex justify-content-center mt-3">
             //     <button className="btn googleBtn  me-2">
